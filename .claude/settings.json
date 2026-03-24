@@ -1,0 +1,43 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/core-vendor-guard.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/clean-build-output.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/graphql-sync-check.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/sync-manuals-check.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/react-lint-on-edit.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

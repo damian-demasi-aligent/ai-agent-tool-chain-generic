@@ -1,0 +1,44 @@
+{
+  "$comment": "Maps skills and hooks to the stack capabilities they require. Used by /setup-project to prune inapplicable tools. Skills/hooks without an entry are always kept.",
+  "skills": {
+    "admin-config": ["magento"],
+    "data-patch": ["magento"],
+    "email-patterns": ["magento"],
+    "email-template": ["magento"],
+    "magento-module": ["magento"],
+    "module-overview": ["magento"],
+    "observer": ["magento"],
+    "plugin": ["magento"],
+    "rest-api-patterns": ["magento"],
+    "layout-diff": ["magento-theme"],
+    "create-theme-override": ["magento-theme"],
+    "less-theme": ["magento-theme"],
+    "react-new-widget": ["magento-react-bridge"],
+    "react-dom-hook": ["magento-react-bridge"],
+    "react-widget-wiring": ["magento-react-bridge"],
+    "react-debug-widget": ["magento-react-bridge"],
+    "react-patterns": ["react"],
+    "react-a11y-check": ["react"],
+    "react-error-handling": ["react"],
+    "react-form-wizard": ["react"],
+    "react-add-tests": ["react"],
+    "react-best-practices": ["react"],
+    "react-sync-types": ["graphql", "react"],
+    "gql": ["graphql"]
+  },
+  "hooks": {
+    "clean-build-output.sh": ["react"],
+    "graphql-sync-check.sh": ["magento", "graphql", "react"],
+    "react-lint-on-edit.sh": ["react"]
+  },
+  "$hooks-always-kept": ["core-vendor-guard.sh", "sync-manuals-check.sh", "config.sh"],
+  "capabilityDefinitions": {
+    "magento": "Magento 2 backend in this repo",
+    "magento-theme": "Luma/Blank/Hyvä theme with LESS and layout overrides",
+    "magento-react-bridge": "React widgets mounted inside Magento-rendered pages via data attributes",
+    "react": "React frontend (any bundler or framework)",
+    "graphql": "GraphQL API layer (schema definitions + client operations)",
+    "nextjs": "Next.js framework",
+    "bigcommerce": "BigCommerce backend/API"
+  }
+}
