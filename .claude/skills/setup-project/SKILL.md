@@ -28,15 +28,17 @@ Before any destructive changes, create a filesystem backup of the toolchain dire
 
 1. Run `git status` to check for uncommitted changes
 2. If there are uncommitted changes, warn the user and ask if they want to proceed (their changes will be mixed with toolchain modifications)
-3. Create a timestamped backup of the toolchain directories:
+3. Ensure `tmp/` is gitignored (add it to `.gitignore` if not already present) so the backup is never committed
+4. Create a timestamped backup of the toolchain directories inside the project:
    ```bash
-   BACKUP_DIR="/tmp/.claude-toolchain-backup-$(date +%s)"
+   BACKUP_DIR="tmp/.claude-toolchain-backup-$(date +%s)"
+   mkdir -p "$BACKUP_DIR"
    cp -r .claude/ "$BACKUP_DIR/claude"
    cp -r docs/ "$BACKUP_DIR/docs"
    [ -f CLAUDE.md ] && cp CLAUDE.md "$BACKUP_DIR/CLAUDE.md"
    [ -f CLAUDE.md.example ] && cp CLAUDE.md.example "$BACKUP_DIR/CLAUDE.md.example"
    ```
-4. Report the backup location to the user so they know where to find it if needed:
+5. Report the backup location to the user so they know where to find it if needed:
 
    ```
    Toolchain backup saved to: <BACKUP_DIR>
