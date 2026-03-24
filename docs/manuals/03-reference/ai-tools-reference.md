@@ -13,7 +13,7 @@ Agents are autonomous subprocesses invoked with `@agent-name`. They run independ
 | `codebase-qa` | `@codebase-qa [question]` | Answer "how does X work" questions by reading the actual source. Returns file paths and line references. |
 | `committer` | `@committer` | Analyse uncommitted changes, propose a logical commit breakdown, and execute after approval. [Two-phase workflow.](#committer) |
 | `documenter` | `@documenter [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, and deployment steps. |
-| `feature-implementer` | `@feature-implementer [plan or task]` | Write code across all project layers following project conventions. Runs in an isolated worktree. Produces a change summary with verification results. Best used via `/implement-feature` which also orchestrates the code review. |
+| `feature-implementer` | `@feature-implementer [plan or task]` | Write code across all project layers following project conventions. Produces a change summary with verification results. Best used via `/implement-feature` which also orchestrates the code review. |
 | `feature-planner` | `@feature-planner [feature description]` | Produce a file-by-file implementation plan from requirements and optional pre-researched findings. Best used via `/plan-feature` which provides research automatically. |
 | `impact-analyser` | `@impact-analyser [file, type, or description]` | Trace all dependencies of a target and report what else will need to change. |
 | `preflight` | `@preflight` | Run full preflight quality checks (see CLAUDE.md Commands for the specific checks). Report results only — never modifies files. |
@@ -51,7 +51,7 @@ Skills are invoked with `/skill-name` in the conversation. They run in the curre
 | Skill | Purpose |
 |---|---|
 | `/plan-feature [requirements file, ticket, or description]` | Orchestrate the full planning workflow: spawn `codebase-qa` sub-agents for research + `impact-analyser` sub-agents for ripple effects, then delegate to `@feature-planner` with findings. Returns a file-by-file implementation plan. |
-| `/implement-feature [plan file path]` | Orchestrate the full implementation workflow: validate the plan, spawn `@feature-implementer` in an isolated worktree, then spawn `@reviewer` to review the result. Returns a combined report with change summary, verification results, and code review findings. The review feedback is informational output for the user — it does not trigger automated fixes. |
+| `/implement-feature [plan file path]` | Orchestrate the full implementation workflow: validate the plan, spawn `@feature-implementer` in the working directory, then spawn `@reviewer` to review the result. Returns a combined report with change summary, verification results, and code review findings. The review feedback is informational output for the user — it does not trigger automated fixes. |
 
 #### Feature scaffolding
 
@@ -76,6 +76,7 @@ Skills are invoked with `/skill-name` in the conversation. They run in the curre
 | `/react-add-tests [target or "setup"]` | Write Vitest tests for a component, hook, or provider. Use `"setup"` to bootstrap test infrastructure. |
 | `/react-sync-types [module?]` | Compare `schema.graphqls` definitions against the project's TypeScript types file and GQL template literals (paths from CLAUDE.md). Reports mismatches. |
 | `/react-debug-widget [name]` | Trace the full integration chain for a React widget and identify the broken link. |
+| `/debug-frontend [project path?]` | Debug frontend bugs with runtime evidence. Starts a local log server, instruments code with hypotheses-tagged logging, and captures logs server-side so you never need to copy-paste from DevTools. |
 
 #### Git
 
@@ -121,6 +122,7 @@ These are loaded automatically into agents that declare them. They inject projec
 | I need a new DB column, table, or EAV attribute | `/data-patch` |
 | I need transactional emails for a feature | `/email-template` |
 | My React widget isn't rendering | `/react-debug-widget` |
+| I need runtime evidence to debug a frontend bug | `/debug-frontend` — instruments code, captures logs server-side, no DevTools copy-paste needed |
 | My GraphQL types are out of sync | `/react-sync-types` |
 | I want to run quality checks (React + PHP) | `@preflight` |
 | I want to run quality checks for one stack only | `/preflight react` or `/preflight php` |

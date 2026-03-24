@@ -6,6 +6,29 @@ For canonical command syntax and inventory, use [`../reference/ai-tools-referenc
 
 ---
 
+## Runtime debugging with log evidence
+
+When you need runtime evidence to diagnose a bug — values are wrong, state is stale, conditional branches are unexpected, or async timing is off:
+
+```
+/debug-frontend
+```
+
+This skill replaces the manual "add console.log → reproduce → copy-paste from DevTools" cycle. It:
+
+1. Starts a local log server (port 8787) that captures logs server-side
+2. Guides you through generating testable hypotheses
+3. Instruments the code with tagged `debugLog()` calls (wrapped in `#region debug` for easy cleanup)
+4. Reads logs directly from the log file after reproduction — no user copy-paste needed
+5. Evaluates each hypothesis as CONFIRMED / REJECTED / INCONCLUSIVE
+6. Removes all instrumentation after the fix is verified
+
+**When to use this instead of `/react-debug-widget`:**
+- `/react-debug-widget` traces the static integration chain (mount points, layout XML, build output) — use it when the widget doesn't render at all
+- `/debug-frontend` captures runtime behaviour — use it when the widget renders but behaves incorrectly (wrong values, broken interactions, race conditions)
+
+---
+
 ## React widget not rendering or behaving incorrectly
 
 ```

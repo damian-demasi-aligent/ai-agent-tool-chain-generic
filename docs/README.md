@@ -134,8 +134,8 @@ The `/plan-feature` command orchestrates three phases:
 The `/implement-feature` skill orchestrates:
 
 1. **Validates the plan** — checks for unresolved open questions
-2. **Spawns `@feature-implementer`** in an isolated git worktree — writes all code, runs verification, produces a change summary
-3. **Spawns `@reviewer`** — reviews the changes for correctness and patterns compliance
+2. **Spawns `@feature-implementer`** in the working directory — writes all code, runs verification, produces a change summary
+3. **Spawns `@reviewer`** — reviews the uncommitted changes for correctness and patterns compliance
 4. **Reports combined results** — change summary, verification, review findings, key files to understand
 
 ### Step 4 — Iterate manually (if needed)

@@ -151,8 +151,8 @@ The `/plan-feature` skill orchestrates the full planning workflow: it spawns `co
 The `/implement-feature` skill orchestrates the full implementation workflow in four phases:
 
 1. **Validates the plan** — checks for unresolved open questions (`TODO`, `TBD`, `?` markers)
-2. **Spawns `@feature-implementer`** in an isolated git worktree — writes all files, runs type-check/lint/build, produces a change summary
-3. **Spawns `@reviewer`** to review the implementation — detects whether the worktree still exists or changes landed in the main working directory, and directs the reviewer accordingly
+2. **Spawns `@feature-implementer`** in the working directory — writes all files, runs type-check/lint/build, produces a change summary
+3. **Spawns `@reviewer`** to review the uncommitted changes
 4. **Reports combined results** — change summary, verification results, checklist progress, code review findings, and key files to understand
 
 The review feedback is **informational output for the user** — it does not trigger automated fixes. You decide which findings to address and how.
