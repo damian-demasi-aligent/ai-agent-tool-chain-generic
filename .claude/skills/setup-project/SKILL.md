@@ -22,18 +22,29 @@ Configure the Claude Code toolchain for this project based on the detected stack
    - `nextjs` implies `react` — add `react` if missing
 4. If validation fails, report the inconsistency and stop
 
-## Phase 2: Safety snapshot
+## Phase 2: Safety backup
 
-Before any destructive changes:
+Before any destructive changes, create a filesystem backup of the toolchain directories. This avoids polluting git history with snapshot commits while still providing a rollback path.
 
 1. Run `git status` to check for uncommitted changes
 2. If there are uncommitted changes, warn the user and ask if they want to proceed (their changes will be mixed with toolchain modifications)
-3. Create a git commit with the current toolchain state:
+3. Create a timestamped backup of the toolchain directories:
+   ```bash
+   BACKUP_DIR="/tmp/.claude-toolchain-backup-$(date +%s)"
+   cp -r .claude/ "$BACKUP_DIR/claude"
+   cp -r docs/ "$BACKUP_DIR/docs"
+   [ -f CLAUDE.md ] && cp CLAUDE.md "$BACKUP_DIR/CLAUDE.md"
+   [ -f CLAUDE.md.example ] && cp CLAUDE.md.example "$BACKUP_DIR/CLAUDE.md.example"
    ```
-   git add .claude/ docs/ CLAUDE.md
-   git commit -m "toolchain: Snapshot before setup-project configuration"
+4. Report the backup location to the user so they know where to find it if needed:
+
    ```
-   This provides a clean rollback point via `git revert`.
+   Toolchain backup saved to: <BACKUP_DIR>
+   ```
+
+   This backup covers only the `.claude/` and `docs/` toolchain files — not your project source code or working changes. It will be automatically deleted after you approve the final setup results.
+
+   To restore manually if needed: `cp -r <BACKUP_DIR>/claude/ .claude/ && cp -r <BACKUP_DIR>/docs/ docs/`
 
 ## Phase 3: Generate CLAUDE.md
 
@@ -44,11 +55,13 @@ Generate a project-specific `CLAUDE.md` by reading the stack config and scanning
 Generate these sections in order. For each, scan the project to populate with real content — never use placeholder text.
 
 #### `## Project Overview`
+
 - Read `stack-config.json` for project name, backend framework, frontend framework
 - Summarize the tech stack in 2-3 sentences
 - Note the vendor namespace (if Magento) or project structure
 
 #### `## Commands`
+
 - **Always include a subsection for each detected layer:**
   - `### Frontend (Node)` — if `react` or `nextjs` capability. List commands from `stack.frontend.commands`
   - `### Backend CLI` — if `magento` capability. List CLI commands using the detected `cliWrapper`
@@ -56,6 +69,7 @@ Generate these sections in order. For each, scan the project to populate with re
 - Include the package manager, Node version, and any wrapper commands
 
 #### `## Architecture`
+
 - **Conditional subsections based on capabilities:**
   - `### Frontend` — if `react` or `nextjs`. Describe source path, build output, entry points, component structure
   - `### Backend Modules` — if `magento`. List custom modules found in `modulePath`, describe standard structure
@@ -65,19 +79,23 @@ Generate these sections in order. For each, scan the project to populate with re
   - `### Key Dependencies` — always. List major dependencies from package.json/composer.json
 
 #### `## Documentation (docs/)`
+
 - Describe the `docs/` folder structure (plans, features, requirements, manuals)
 - Reference the toolchain workflow
 
 #### `## Testing`
+
 - Scan for existing test framework (Vitest, Jest, PHPUnit)
 - If none found, recommend based on stack (Vitest for Vite projects, Jest for Next.js, PHPUnit for Magento)
 - Note co-location convention
 
 #### `## Code Standards`
+
 - Detect from config files: ESLint config, Prettier config, PHPCS config, EditorConfig
 - List the detected standards and formatting rules
 
 #### `## Commit Conventions`
+
 - Use `mainBranch` and `commitPrefix` from stack config
 - Include the message format and Co-Authored-By trailer
 - Generate a **commit grouping order** appropriate to the stack:
@@ -87,6 +105,7 @@ Generate these sections in order. For each, scan the project to populate with re
   - **Pure Magento**: registration → admin → models/API → plugins/observers → email → layout/templates → LESS/JS
 
 #### `## Conventions`
+
 - **Conditional subsections per language/framework:**
   - `### React` — if `react`. Include component patterns, state management, error handling approach
   - `### PHP / Magento` — if `magento`. Include plugin naming, constructor style, copyright header
@@ -143,6 +162,8 @@ Generate these sections in order. For each, scan the project to populate with re
 
 Use **AskUserQuestion** to confirm: "Proceed with these changes?" with options "Yes, apply changes" / "No, let me adjust stack-config.json first".
 
+Include this note in the confirmation prompt: "Approving will apply all changes and delete the toolchain backup from Phase 2. The backup only contains `.claude/` and `docs/` toolchain files — your project source code and working changes are not affected."
+
 **Wait for confirmation before proceeding to Phase 5.**
 
 ## Phase 5: Prune skills
@@ -150,6 +171,7 @@ Use **AskUserQuestion** to confirm: "Proceed with these changes?" with options "
 Read `.claude/stack-capabilities.json` to determine which skills to delete.
 
 For each skill in the `skills` mapping:
+
 1. Check if ALL of its required capabilities are in the project's capabilities list
 2. If not, delete the entire skill directory: `rm -rf .claude/skills/<skill-name>/`
 3. Record what was deleted
@@ -157,6 +179,7 @@ For each skill in the `skills` mapping:
 ## Phase 6: Update agent skill references
 
 For each agent file in `.claude/agents/`:
+
 1. Read the file
 2. Find the `allowed_tools:` line in frontmatter (this lists skill names)
 3. Remove any skill names that were deleted in Phase 5
@@ -167,11 +190,14 @@ For each agent file in `.claude/agents/`:
 ## Phase 7: Prune hooks and update settings.json
 
 ### Delete inapplicable hooks
+
 For each hook in the `hooks` mapping in `stack-capabilities.json`:
+
 1. Check if ALL required capabilities are present
 2. If not, delete the hook file: `rm .claude/hooks/<hook-name>`
 
 ### Update settings.json
+
 1. Read `.claude/settings.json`
 2. Remove any hook references that point to deleted hook files
 3. Write the updated settings.json
@@ -199,15 +225,27 @@ The config.sh should always source cleanly — missing variables should be empty
 ### Write setup log
 
 Create `.claude/setup-log.md` documenting:
+
 - Date and detected capabilities
 - Skills deleted and kept
 - Hooks deleted and kept
 - Agent modifications made
 - Any warnings or manual steps needed
 
+### Clean up backup
+
+Delete the filesystem backup created in Phase 2:
+
+```bash
+rm -rf "$BACKUP_DIR"
+```
+
+Report that the backup has been cleaned up.
+
 ### Final report
 
 Present to the user:
+
 1. Summary of what was configured
 2. The generated CLAUDE.md path
 3. Any manual steps needed (e.g., "verify the CLI wrapper command works")
