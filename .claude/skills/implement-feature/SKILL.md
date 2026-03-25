@@ -71,15 +71,16 @@ The feature-implementer agent will:
 - Read the plan and CLAUDE.md
 - Read vendor source code for integration points (controllers, repositories, event dispatchers)
 - **Verify integration points are real** — scan files the feature depends on (imports, calls into) for stubs. If stubs are found, the agent stops and returns a "Blocked — Stub Dependencies" report instead of implementing
+- **Verify required environment variables** — scan for `process.env.*` references in dependency files, check `.env*` files for their values. If backend URLs or API keys are missing/empty, the agent stops and returns a "Blocked — Missing Backend Configuration" report
 - Implement each checklist item in order
 - Install dependencies and run codegen inline as new packages/schemas are added
 - Run type-check, lint, and build verification
-- Run a dev server smoke test (start the dev server, curl the app, check for runtime errors) — this catches provider ordering bugs, server/client boundary mistakes, missing imports, and hydration errors that static checks miss
+- Run a dev server smoke test (start the dev server, curl the app AND a data-fetching route, check for runtime and backend connectivity errors) — this catches provider ordering bugs, server/client boundary mistakes, missing imports, hydration errors, and missing backend configuration that static checks miss
 - Produce a structured change summary
 
 Wait for the agent to complete. This may take a while for large features.
 
-**If the implementer returns a stub blocker** instead of a completed implementation, present the blocker report to the user and stop. Do not proceed to Phase 3. The user must resolve the stubs (implement the dependencies, configure the backend, or confirm the stubs are intentional) before re-running `/implement-feature`.
+**If the implementer returns a stub or configuration blocker** instead of a completed implementation, present the blocker report to the user and stop. Do not proceed to Phase 3. The user must resolve the issue (implement dependencies, configure environment variables, or confirm the current state is intentional) before re-running `/implement-feature`.
 
 ## Phase 3: Code review
 

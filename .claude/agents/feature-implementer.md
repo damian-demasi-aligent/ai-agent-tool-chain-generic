@@ -7,13 +7,8 @@ model: opus
 skills:
   - react-patterns
   - react-best-practices
-  - magento-module
-  - react-widget-wiring
   - react-error-handling
   - react-a11y-check
-  - less-theme
-  - email-patterns
-  - rest-api-patterns
 ---
 
 # Implementation Agent
@@ -40,6 +35,7 @@ You implement features by writing code that follows the project's established pa
    - Files where most or all exported functions match the above patterns
 
    **If stubs are found:** stop before writing any code. Return a **Blocked — Stub Dependencies** report listing each stub with its file path, function name, and what it returns. Explain that the feature cannot be implemented until these dependencies have real implementations. Example:
+
    ```
    ## Blocked — Stub Dependencies
 
@@ -52,9 +48,31 @@ You implement features by writing code that follows the project's established pa
 
    Recommended: implement these methods first, or confirm they are intentionally mocked for this phase.
    ```
+
    Do not attempt to implement the stubs yourself unless the plan explicitly includes them in scope. The stubs may require backend work, external API configuration, or other changes outside the feature's scope.
-7. **Read every file you plan to modify** before editing it.
-8. **Verify file paths exist** — do not create directories or files without checking the parent exists.
+
+7. **Verify required environment variables are configured.** After checking stubs, scan the files the feature depends on (and any new files the plan will create) for `process.env.*` references. For each referenced env var:
+   - Check `.env`, `.env.local`, `.env.development`, `.env.development.local`, and `.env.production.local` at the project root and in subdirectories referenced by the plan (e.g., `template-project/.env.local`)
+   - Also check if the var has a hardcoded fallback that would produce a non-functional value (e.g., `process.env.BACKEND_URL ?? ''` — an empty string is not a configured backend)
+
+   **If required backend/API URLs are empty or missing:** stop before writing any code. Return a **Blocked — Missing Backend Configuration** report. Example:
+
+   ```
+   ## Blocked — Missing Backend Configuration
+
+   The feature depends on environment variables that are not configured.
+   These must be set before implementation can proceed.
+
+   - `NEXT_PUBLIC_ADOBE_COMMERCE_URL` — referenced in `template-project/src/brands/shared/actions/wishlistActions.ts`, falls back to empty string `''`. Must be set to the Adobe Commerce GraphQL endpoint URL.
+   - `NEXT_PUBLIC_API_KEY` — referenced in `src/lib/api-client.ts`, not found in any .env file.
+
+   Create or update the appropriate .env file (e.g., `.env.local` or `.env.development`) with valid values, then re-run `/implement-feature`.
+   ```
+
+   **What counts as "required":** Only flag env vars that are backend/API URLs, API keys, or service credentials that the feature's data flow depends on. Do not flag optional feature flags, analytics IDs, or vars with sensible non-empty defaults.
+
+8. **Read every file you plan to modify** before editing it.
+9. **Verify file paths exist** — do not create directories or files without checking the parent exists.
 
 ## Checklist execution rules
 
@@ -141,12 +159,14 @@ All smoke test configuration comes from the **Smoke Test** subsection under **Co
    - The install and codegen commands should have already been handled in the bootstrap step above
 
 2. **Start the dev server in the background.**
+
    ```bash
    # Use the Bash tool with run_in_background: true
    <dev server command from CLAUDE.md>
    ```
 
 3. **Wait for the server to be ready.** Poll with `curl` in a loop — up to 60 seconds, checking every 3 seconds. Use the health endpoint if configured, otherwise use the dev server URL:
+
    ```bash
    CHECK_URL="<health endpoint or dev server URL from CLAUDE.md>"
    for i in $(seq 1 20); do
@@ -157,13 +177,19 @@ All smoke test configuration comes from the **Smoke Test** subsection under **Co
      sleep 3
    done
    ```
+
    If the server never responds, report "Smoke test: FAILED — dev server did not start within 60s" and include the last 50 lines of server output, then kill the process and continue.
 
 4. **Curl the application and check for errors.** Fetch the dev server URL and capture both the HTTP status and response body:
+
    ```bash
    STATUS=$(curl -s -o /tmp/smoke-response.html -w '%{http_code}' "<dev server URL from CLAUDE.md>")
    ```
-   If you know a specific route the feature affects (from the plan file), curl that route too.
+
+   **Also curl a data-fetching route.** The root URL may render a static shell that doesn't exercise the backend. To catch missing env vars, auth errors, and backend connectivity issues, also curl at least one route that fetches real data:
+   - If the plan file mentions specific routes the feature affects, curl one of those
+   - Otherwise, curl a known data-fetching route from the project (e.g., a category page, product page, or API endpoint — look in CLAUDE.md Architecture or the plan's Impact Analysis for route examples)
+   - Compare the response: a backend connectivity error often returns 200 with an error component rather than a true 500, so scan the response body for error messages (see step 5)
 
 5. **Check for failure signals.** Scan the response body and the dev server's terminal output for:
    - HTTP 500 status
@@ -174,8 +200,13 @@ All smoke test configuration comes from the **Smoke Test** subsection under **Co
    - `"Error: "` at the start of a line in server output
    - `"hydration"` errors in the response body
    - Any stack trace in the server output
+   - `"ECONNREFUSED"`, `"ENOTFOUND"`, `"fetch failed"`, or `"Network Error"` — backend connectivity failures
+   - `"401"`, `"403"`, `"Unauthorized"`, `"Forbidden"` — auth/credential issues
+   - Empty or malformed JSON responses from API routes (e.g., `{}` or `{"errors":`)
+   - `"ApolloError"` or `"GraphQL error"` in the response body or server output
 
 6. **Kill the dev server.** Parse the port from the dev server URL and kill the process:
+
    ```bash
    # Extract port from the URL and kill the process listening on it
    lsof -ti:<port> | xargs kill -9 2>/dev/null || true
