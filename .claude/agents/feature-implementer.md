@@ -65,16 +65,31 @@ When multiple layers are involved (e.g., backend API + frontend component), ensu
 - Follow the data flow conventions documented in CLAUDE.md Architecture
 - Use the project's established data passing patterns (data attributes, context, props, etc.)
 
+### Install & codegen — inline triggers
+
+Read the **Install & Codegen** subsection under **Commands** in CLAUDE.md for the project's install and codegen commands. If no such subsection exists, look elsewhere in CLAUDE.md Commands for the equivalent commands.
+
+These are **not optional post-implementation steps** — run them inline, immediately after the triggering change, before continuing to the next checklist item:
+
+- **Run the install command immediately after:**
+  - Creating a new workspace package or module
+  - Adding or removing a dependency in any manifest file (package.json, composer.json, requirements.txt, Gemfile, go.mod, pyproject.toml, etc.)
+  - Any change that would make the lockfile out of sync with the manifest
+
+- **Run the codegen command immediately after:**
+  - Creating or modifying schema files (GraphQL schemas, OpenAPI specs, Protobuf definitions, etc.)
+  - Adding new queries, mutations, or API operations that require generated types
+
+Do not defer these to the end. Subsequent checklist items may depend on the installed packages or generated types. If you skip this, later steps will fail with missing module or missing type errors.
+
 ## After writing code
 
-### Dependency & codegen bootstrap
+### Dependency & codegen safety net
 
-Before running any checks, ensure the project can actually build with your changes. Read the **Smoke Test** subsection under **Commands** in CLAUDE.md to find the project's install and codegen commands. If no Smoke Test subsection exists, look for install/codegen commands elsewhere in CLAUDE.md or infer from the project files.
+If you followed the inline install & codegen triggers during implementation, these should already be up to date. As a safety net before running verification, confirm:
 
-1. **Install dependencies** — If you created a new workspace package, added new dependencies, or the lockfile is out of date, run the install command documented in CLAUDE.md (e.g., the "Install command" from the Smoke Test section).
-2. **Run codegen** — If CLAUDE.md documents a codegen command (e.g., the "Codegen command" from the Smoke Test section), run it. This is common in GraphQL projects that generate typed query/mutation files, or projects with OpenAPI code generators.
-
-Skip these steps if you only modified existing files and didn't change any dependencies or schema files.
+1. **Lockfile in sync** — If any dependency manifest was modified during implementation, verify the install command was already run. If not, run it now using the command from the **Install & Codegen** subsection in CLAUDE.md Commands.
+2. **Generated files up to date** — If any schema files were created or modified, verify the codegen command was already run. If not, run it now.
 
 ### Static verification
 

@@ -69,16 +69,23 @@ Generate these sections in order. For each, scan the project to populate with re
   - `### Backend CLI` — if `magento` capability. List CLI commands using the detected `cliWrapper`
   - `### Backend Quality` — if `magento` capability. List quality commands from `stack.backend.qualityCommands`
 - Include the package manager, Node version, and any wrapper commands
-- `### Smoke Test` — if `smokeTest` section exists in stack-config and `smokeTest.devCommand` is not null. Document each non-null field from the `smokeTest` config as a key-value list:
+- `### Install & Codegen` — always include this subsection when `smokeTest.installCommand` or `smokeTest.codegenCommand` is non-null. Document the commands as a key-value list and describe when each must be run:
+  ```markdown
+  ### Install & Codegen
+  - Install command: `yarn install`
+  - Codegen command: `yarn codegen`
+
+  **When to run:** Run the install command immediately after creating a new package/module, adding or removing dependencies, or modifying any dependency manifest (package.json, composer.json, requirements.txt, Gemfile, go.mod, etc.). Run the codegen command immediately after creating or modifying schema files (GraphQL schemas, OpenAPI specs, Protobuf definitions, etc.). Do not wait until the end of implementation — run these inline as soon as the triggering change is made.
+  ```
+  Omit lines where the value is null. If both are null, skip this subsection.
+- `### Smoke Test` — if `smokeTest` section exists in stack-config and `smokeTest.devCommand` is not null. Document the dev server fields only:
   ```markdown
   ### Smoke Test
   - Dev server command: `yarn dev`
   - Dev server URL: `http://localhost:3000`
-  - Install command: `yarn install`
-  - Codegen command: `yarn codegen`
   - Health endpoint: `/api/health`
   ```
-  Omit lines where the value is null (e.g., if there's no codegen command, don't include that line). If the entire `smokeTest` section is null or `devCommand` is null, skip this subsection entirely.
+  Omit lines where the value is null. If the entire `smokeTest` section is null or `devCommand` is null, skip this subsection entirely.
 
 #### `## Architecture`
 
