@@ -67,7 +67,16 @@ When multiple layers are involved (e.g., backend API + frontend component), ensu
 
 ## After writing code
 
-### Verification
+### Dependency & codegen bootstrap
+
+Before running any checks, ensure the project can actually build with your changes. Read the **Smoke Test** subsection under **Commands** in CLAUDE.md to find the project's install and codegen commands. If no Smoke Test subsection exists, look for install/codegen commands elsewhere in CLAUDE.md or infer from the project files.
+
+1. **Install dependencies** — If you created a new workspace package, added new dependencies, or the lockfile is out of date, run the install command documented in CLAUDE.md (e.g., the "Install command" from the Smoke Test section).
+2. **Run codegen** — If CLAUDE.md documents a codegen command (e.g., the "Codegen command" from the Smoke Test section), run it. This is common in GraphQL projects that generate typed query/mutation files, or projects with OpenAPI code generators.
+
+Skip these steps if you only modified existing files and didn't change any dependencies or schema files.
+
+### Static verification
 
 Run the project's verification commands (see CLAUDE.md Commands section):
 
@@ -75,6 +84,82 @@ Run the project's verification commands (see CLAUDE.md Commands section):
 2. Lint check to verify code standards
 3. Production build to verify bundling succeeds
 4. Report any failures — do not silently skip checks
+
+### Dev server smoke test
+
+After static checks pass, start the dev server to catch runtime errors that static analysis misses (provider ordering, missing imports, server/client boundary violations, hydration errors, etc.).
+
+All smoke test configuration comes from the **Smoke Test** subsection under **Commands** in CLAUDE.md. Do not assume any commands, URLs, or ports — read them from CLAUDE.md.
+
+#### When to skip
+
+- CLAUDE.md has no "Smoke Test" subsection — note "Smoke test: SKIPPED (not configured)" in your report
+- The Smoke Test subsection exists but has no "Dev server command" — note "Smoke test: SKIPPED (no dev server command)" in your report
+- The feature has zero changes to files that would be served by the dev server — note "Smoke test: SKIPPED (no relevant changes)"
+
+#### Procedure
+
+1. **Read CLAUDE.md** for the Smoke Test configuration. Extract:
+   - **Dev server command** (required) — the command to start the dev server
+   - **Dev server URL** (required) — the URL to curl
+   - **Health endpoint** (optional) — a lightweight endpoint to check instead of or in addition to the root URL
+   - The install and codegen commands should have already been handled in the bootstrap step above
+
+2. **Start the dev server in the background.**
+   ```bash
+   # Use the Bash tool with run_in_background: true
+   <dev server command from CLAUDE.md>
+   ```
+
+3. **Wait for the server to be ready.** Poll with `curl` in a loop — up to 60 seconds, checking every 3 seconds. Use the health endpoint if configured, otherwise use the dev server URL:
+   ```bash
+   CHECK_URL="<health endpoint or dev server URL from CLAUDE.md>"
+   for i in $(seq 1 20); do
+     if curl -s -o /dev/null -w '%{http_code}' "$CHECK_URL" 2>/dev/null | grep -qE '^[2345]'; then
+       echo "Server ready after $((i * 3)) seconds"
+       break
+     fi
+     sleep 3
+   done
+   ```
+   If the server never responds, report "Smoke test: FAILED — dev server did not start within 60s" and include the last 50 lines of server output, then kill the process and continue.
+
+4. **Curl the application and check for errors.** Fetch the dev server URL and capture both the HTTP status and response body:
+   ```bash
+   STATUS=$(curl -s -o /tmp/smoke-response.html -w '%{http_code}' "<dev server URL from CLAUDE.md>")
+   ```
+   If you know a specific route the feature affects (from the plan file), curl that route too.
+
+5. **Check for failure signals.** Scan the response body and the dev server's terminal output for:
+   - HTTP 500 status
+   - `"Internal Server Error"`
+   - `"Module not found"` or `"Cannot find module"`
+   - `"SyntaxError"` or `"TypeError"` in server output
+   - `"Unhandled Runtime Error"` (Next.js)
+   - `"Error: "` at the start of a line in server output
+   - `"hydration"` errors in the response body
+   - Any stack trace in the server output
+
+6. **Kill the dev server.** Parse the port from the dev server URL and kill the process:
+   ```bash
+   # Extract port from the URL and kill the process listening on it
+   lsof -ti:<port> | xargs kill -9 2>/dev/null || true
+   ```
+
+7. **Report results.** Add to the verification section:
+   - `Smoke test: PASSED` — dev server started, page returned non-500 status, no error signals found
+   - `Smoke test: FAILED — <reason>` — include the specific error signals found, with the relevant lines from the response or server output
+
+#### If the smoke test fails
+
+**Do not skip to the change summary.** Diagnose and fix the issue:
+
+1. Read the error output carefully — it usually points directly to the broken file and line
+2. Fix the issue in your code
+3. Re-run the smoke test to confirm the fix
+4. Repeat until the smoke test passes or you've made 3 attempts
+
+If after 3 attempts the smoke test still fails, report it as a known failure with full diagnostic output so the user can investigate. Do not silently move on.
 
 ### Change summary (mandatory)
 
@@ -93,6 +178,7 @@ After verification, produce a structured summary of all changes so the user can 
 - Type-check: PASSED / FAILED (details)
 - Lint: PASSED / FAILED (details)
 - Build: PASSED / FAILED (details)
+- Smoke test: PASSED / FAILED / SKIPPED (details)
 
 ### Checklist progress
 - X of Y items completed

@@ -69,6 +69,16 @@ Generate these sections in order. For each, scan the project to populate with re
   - `### Backend CLI` — if `magento` capability. List CLI commands using the detected `cliWrapper`
   - `### Backend Quality` — if `magento` capability. List quality commands from `stack.backend.qualityCommands`
 - Include the package manager, Node version, and any wrapper commands
+- `### Smoke Test` — if `smokeTest` section exists in stack-config and `smokeTest.devCommand` is not null. Document each non-null field from the `smokeTest` config as a key-value list:
+  ```markdown
+  ### Smoke Test
+  - Dev server command: `yarn dev`
+  - Dev server URL: `http://localhost:3000`
+  - Install command: `yarn install`
+  - Codegen command: `yarn codegen`
+  - Health endpoint: `/api/health`
+  ```
+  Omit lines where the value is null (e.g., if there's no codegen command, don't include that line). If the entire `smokeTest` section is null or `devCommand` is null, skip this subsection entirely.
 
 #### `## Architecture`
 

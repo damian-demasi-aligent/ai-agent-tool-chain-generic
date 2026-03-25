@@ -91,6 +91,12 @@ Agent tool call:
 11. Package manager and version (npm, yarn, pnpm — check lock files)
 12. Node version (check .nvmrc, .node-version, or engines in package.json)
 13. All dev/build/lint/typecheck commands from package.json scripts
+14. Dev server smoke test details:
+    - The command to start a dev server (from package.json `dev` script, or framework-specific: `python manage.py runserver`, `bin/rails server`, `php -S`, etc.)
+    - The URL it listens on — check for custom port config in framework config files (next.config.js/mjs, vite.config.ts `server.port`, webpack `devServer.port`, manage.py `--port`, etc.) and `--port`/`-p` flags in the dev script. If no custom port, use the framework default.
+    - The dependency install command (package manager install, `pip install -r requirements.txt`, `bundle install`, `composer install`, etc.)
+    - Any codegen/generate command (from package.json scripts, Makefile targets, etc.)
+    - A lightweight health check endpoint if one exists (e.g. `/api/health`, `/healthz`)
 
 Return your findings as structured key-value pairs."
 ```
@@ -175,6 +181,13 @@ After all agents complete, merge their findings into a `.claude/stack-config.jso
   },
   "mainBranch": "<detected from git>",
   "commitPrefix": "<detected from branch naming or null>",
+  "smokeTest": {
+    "devCommand": "<command to start the dev server, e.g. 'yarn dev', 'python manage.py runserver', 'bin/rails server', 'go run .', or null if no dev server>",
+    "devUrl": "<URL the dev server listens on, e.g. 'http://localhost:3000' — derived from framework config, CLI flags, or framework defaults>",
+    "installCommand": "<command to install dependencies, e.g. 'yarn install', 'pip install -r requirements.txt', 'composer install', 'bundle install', or null>",
+    "codegenCommand": "<command to run code generation, e.g. 'yarn codegen', 'yarn generate', or null if not applicable>",
+    "healthEndpoint": "<lightweight endpoint to check, e.g. '/api/health', '/', or null — prefer an API health endpoint over a full page render when available>"
+  },
   "docs": {
     "plans": "docs/plans",
     "features": "docs/features",

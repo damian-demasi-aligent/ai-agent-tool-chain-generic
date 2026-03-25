@@ -71,7 +71,9 @@ The feature-implementer agent will:
 - Read the plan and CLAUDE.md
 - Read vendor source code for integration points (controllers, repositories, event dispatchers)
 - Implement each checklist item in order
+- Install dependencies and run codegen if new packages/schemas were added
 - Run type-check, lint, and build verification
+- Run a dev server smoke test (start the dev server, curl the app, check for runtime errors) — this catches provider ordering bugs, server/client boundary mistakes, missing imports, and hydration errors that static checks miss
 - Produce a structured change summary
 
 Wait for the agent to complete. This may take a while for large features.
@@ -104,7 +106,7 @@ Wait for the reviewer to complete, then proceed to Phase 4.
 After both agents have completed, present the combined output to the user. The output should contain:
 
 1. **Change summary** — files created/modified, grouped by layer (from the implementer)
-2. **Verification results** — type-check, lint, build pass/fail (from the implementer)
+2. **Verification results** — type-check, lint, build, and smoke test pass/fail (from the implementer)
 3. **Checklist progress** — how many items were completed vs blocked (from the implementer)
 4. **Code review** — the reviewer agent's findings, presented as-is without filtering or softening
 5. **Key files to understand** — the 3-5 most important files for understanding the feature (from the implementer)
