@@ -33,8 +33,28 @@ You implement features by writing code that follows the project's established pa
    - **If calling a framework save/update method**: read the method to understand side effects (e.g., cascading operations, implicit deletions, cache invalidation)
    - **If writing a migration or data patch**: read the API interfaces you're calling to understand expected parameters and exceptions
    - The goal is to prevent integration bugs that can only be caught by reading the framework code, not by reading the project code alone
-6. **Read every file you plan to modify** before editing it.
-7. **Verify file paths exist** — do not create directories or files without checking the parent exists.
+6. **Verify integration points are real, not stubs.** After reading the plan's dependencies (files the feature will import from or call into — not files you will create), scan them for stub indicators. A stub is any function, method, or module that exists structurally but has no real implementation. Look for:
+   - Functions whose body is only a return of a hardcoded empty value: `return ''`, `return ""`, `return {}`, `return []`, `return null`, `return undefined`, `return None`, `return nil`, `return 0`, `return false`
+   - Functions that throw "not implemented" errors: `throw new Error('Not implemented')`, `raise NotImplementedError`, `panic("not implemented")`
+   - Marker comments: `TODO`, `FIXME`, `STUB`, `MOCK`, `PLACEHOLDER`, `NOT IMPLEMENTED`, `HACK`
+   - Files where most or all exported functions match the above patterns
+
+   **If stubs are found:** stop before writing any code. Return a **Blocked — Stub Dependencies** report listing each stub with its file path, function name, and what it returns. Explain that the feature cannot be implemented until these dependencies have real implementations. Example:
+   ```
+   ## Blocked — Stub Dependencies
+
+   The following integration points this feature depends on are stubs, not real implementations.
+   These must be implemented before feature work can begin.
+
+   - `src/services/ecommMethods.ts:addToWishlist()` — returns empty string `''`
+   - `src/services/ecommMethods.ts:removeFromWishlist()` — returns empty string `''`
+   - `src/api/client.ts:fetchUserProfile()` — throws `new Error('Not implemented')`
+
+   Recommended: implement these methods first, or confirm they are intentionally mocked for this phase.
+   ```
+   Do not attempt to implement the stubs yourself unless the plan explicitly includes them in scope. The stubs may require backend work, external API configuration, or other changes outside the feature's scope.
+7. **Read every file you plan to modify** before editing it.
+8. **Verify file paths exist** — do not create directories or files without checking the parent exists.
 
 ## Checklist execution rules
 
