@@ -6,7 +6,9 @@ const path = require("path");
 const [, , action, projectPath, sessionId] = process.argv;
 
 if (!action || !projectPath || !sessionId) {
-  console.error("Usage: node debug_cleanup.js <action> <project-path> <session-id>");
+  console.error(
+    "Usage: node debug_cleanup.js <action> <project-path> <session-id>",
+  );
   console.error("Actions:");
   console.error("  clear  - Truncate log file to empty");
   console.error("  remove - Delete log file");

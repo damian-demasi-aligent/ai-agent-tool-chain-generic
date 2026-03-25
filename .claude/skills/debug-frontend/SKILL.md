@@ -98,6 +98,36 @@ Response:
 
 **If port 8787 busy:** `lsof -ti :8787 | xargs kill -9` then restart
 
+**Step 3: Check for CSP restrictions** (prevents logs from being blocked by Content Security Policy):
+
+The debug server already sends CORS headers, but browsers enforce CSP **before** CORS. If the project has a `connect-src` directive that doesn't include `http://localhost:8787`, log requests will be silently blocked.
+
+Search for CSP configuration:
+
+```bash
+# Search for CSP config in the project (covers Next.js, Vite, Webpack, meta tags, middleware, etc.)
+grep -ri "connect-src\|contentSecurityPolicy\|content-security-policy" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" --include="*.html" --include="*.mjs" -l .
+```
+
+**If CSP files are found:** Read each file and check whether `connect-src` is defined.
+
+- **If `connect-src` includes `'self'` (or any allowlist that excludes localhost:8787):** Temporarily add `http://localhost:8787` to the `connect-src` directive in the **development-only** CSP config. Look for patterns like:
+  - Conditional checks: `process.env.NODE_ENV === 'development'`, `isDev`, `__DEV__`
+  - Separate dev/prod config objects
+
+  Example fix (adapt to the project's CSP pattern):
+
+  ```javascript
+  // Add to the connect-src directive in dev mode only
+  ...(process.env.NODE_ENV === 'development' ? ['http://localhost:8787'] : []),
+  ```
+
+  **Important:** Note the file and line you modified so you can revert it in Phase 9 (Clean Up).
+
+- **If no `connect-src` is defined, or CSP is not configured:** No action needed — `http://localhost:8787/log` will work directly.
+
+- **If CSP is set via a `<meta>` tag in HTML:** Modify the tag in the dev template only, or use the project's API route proxy approach instead (see Troubleshooting section).
+
 ──────────
 
 ### Phase 2: Generate Hypotheses
@@ -299,7 +329,8 @@ Remove instrumentation only after:
 - Post-fix logs prove success
 - User confirms resolved
 
-Search for `#region debug` and remove all debug code.
+1. Search for `#region debug` and remove all debug code.
+2. **Revert any CSP changes** made in Phase 1 Step 3. If you added `http://localhost:8787` to a CSP `connect-src` directive, remove it now. Check the file and line you noted during setup.
 
 ## Log Format
 
