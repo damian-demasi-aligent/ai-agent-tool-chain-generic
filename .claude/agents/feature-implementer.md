@@ -14,7 +14,6 @@ skills:
   - less-theme
   - email-patterns
   - rest-api-patterns
-isolation: worktree
 ---
 
 # Implementation Agent
@@ -61,6 +60,7 @@ Read CLAUDE.md to determine which layers exist in this project, then follow the 
 - **Loaded skills** — the skills loaded into this agent provide detailed patterns for specific domains. Follow them for domain-specific implementation (components, modules, API integration, styling, accessibility, email, etc.)
 
 When multiple layers are involved (e.g., backend API + frontend component), ensure cross-layer consistency:
+
 - API contracts (types, schemas) must match between backend and frontend
 - Follow the data flow conventions documented in CLAUDE.md Architecture
 - Use the project's established data passing patterns (data attributes, context, props, etc.)
