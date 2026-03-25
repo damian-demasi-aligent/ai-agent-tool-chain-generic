@@ -21,10 +21,9 @@ Run these commands in parallel to establish context:
 
 ## Phase 1: Read requirements and identify scope
 
-1. **Read the requirements.** If $ARGUMENTS is a file path (e.g. `docs/requirements/ABC-123/description.md`), read it. If it's a ticket number, look for a matching file in `docs/requirements/`. If it's a description, use it directly.
+1. **Read the requirements.** If $ARGUMENTS is a file path (e.g. `docs/requirements/ABC-123/description.md`), read it. If it's a ticket number, look for a matching directory or file in `docs/requirements/`. If it's a description, use it directly.
 
 2. **Read CLAUDE.md** — specifically the **Conventions → Reuse Before Reimplementing** subsection and the **Architecture** section. Identify:
-
    - Which reference features are the closest analogues
    - Which existing modules/components might be extended vs. new ones needed
    - Which shared files will likely need modification (API providers, types, configuration)
