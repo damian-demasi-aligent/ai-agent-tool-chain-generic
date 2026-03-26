@@ -2,6 +2,31 @@
 
 > Start here. This README explains what lives in `docs/`, how it connects to the `.claude/` toolchain and `CLAUDE.md`, and where to go depending on what you need.
 
+**Already working on a project with this toolchain?** Skip to [I need to...](#i-need-to) for a quick lookup table, or read [Workflow for implementing a feature](#workflow-for-implementing-a-feature) for the end-to-end process.
+
+**Setting up the toolchain in a new project?** Read [Prerequisites](#prerequisites) then [Set up this toolchain in a new project](#set-up-this-toolchain-in-a-new-project).
+
+---
+
+## Prerequisites
+
+- **Claude Code CLI** — install via `npm install -g @anthropic-ai/claude-code` (requires Node.js 18+). See [claude.ai/code](https://claude.ai/code) for setup instructions.
+- **An active Anthropic API key or Claude Pro/Max subscription** — Claude Code needs API access to function.
+- **Project dependencies** — your project's own toolchain (Node.js, Composer, etc.) should be installed and working before running `/detect-stack`.
+
+---
+
+## Invocation syntax: `@` vs `/`
+
+This toolchain uses two invocation styles throughout:
+
+| Syntax | What it invokes | Example | When to use |
+|---|---|---|---|
+| `@name` | **Agent** — an autonomous subagent that runs in its own context | `@committer`, `@documenter` | Long-running, multi-step tasks |
+| `/name` | **Skill** — a prompt template that runs in the current conversation | `/plan-feature`, `/detect-stack` | Orchestration commands, scaffolding |
+
+Both are typed directly in the Claude Code prompt. Agents can spawn sub-agents and use tools autonomously; skills execute within your current session.
+
 ---
 
 ## How it all fits together
@@ -17,9 +42,170 @@ docs/                      <- This folder -- living documentation that agents re
   plans/                   <- Implementation plans (input for @feature-implementer)
   features/                <- Architecture documents for completed features
   requirements/            <- Tickets and spec documents (input for @feature-planner)
+  scripts/                 <- Utility scripts (e.g., Jira ticket fetcher)
 ```
 
 **CLAUDE.md** and **`.claude/rules/`** are the sources of truth for project-specific data and conventions. The `.claude/` tools (agents, skills) and `docs/manuals/` all reference them dynamically rather than hardcoding values — this is what makes the entire system portable across projects. Rules files load automatically based on the files being edited, scoping conventions to where they're relevant.
+
+---
+
+## Set up this toolchain in a new project
+
+This toolchain is a **template repo**. To adopt it:
+
+1. Copy the files and directories from this repo into your project
+2. Run `/detect-stack` — auto-detects your technology stack and writes `.claude/stack-config.json`
+3. Run `/setup-project` — generates `CLAUDE.md` and `.claude/rules/`, prunes inapplicable skills/hooks/rules, and configures the toolchain for your stack
+
+![Toolchain Configuration](claude-code-feature-development-toolchain-setup.png)
+
+#### Step 1: Copy the toolchain
+
+Copy all the files and directories from this repo into your project root. These contain the full set of agents, skills, hooks, MCPs, rules examples, and documentation templates. Everything inapplicable to your stack will be pruned in Step 3.
+
+#### Step 2: `/detect-stack`
+
+Spawns `codebase-qa` subagents (using Sonnet) to scan your project's package manifests, config files, framework markers, and directory structure. Produces `.claude/stack-config.json` — a structured description of your stack's capabilities (e.g. `magento`, `react`, `nextjs`, `graphql`).
+
+**User checkpoint:** Review and approve the detected stack configuration before proceeding.
+
+#### Step 3: `/setup-project`
+
+Reads `stack-config.json` and performs a multi-phase setup:
+
+1. Creates a **toolchain backup** (deleted automatically after setup completes)
+2. Generates a slim **CLAUDE.md** (architecture, commands, key dependencies) and **`.claude/rules/`** files (code standards, commit conventions, testing, language-specific conventions with path-scoped frontmatter)
+3. Presents a **setup plan** for review — lists what will be generated, pruned, and configured
+4. After approval: prunes inapplicable skills, hooks, and rules; updates agent configurations; rewrites `config.sh` with project-specific paths; cleans up example files
+5. Writes **`setup-log.md`** documenting what was configured
+
+**User checkpoint:** Review and approve the setup plan before destructive changes are applied.
+
+#### Supported stacks
+
+Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + BigCommerce, React SPA + REST/GraphQL, and more. When the Playwright MCP is configured (`.mcp.json`), agents gain browser automation capabilities: automated bug reproduction, visual regression screenshots, runtime accessibility testing, Lighthouse audits, and feature documentation screenshots.
+
+#### Troubleshooting setup
+
+| Problem | Solution |
+|---|---|
+| `/detect-stack` got the stack wrong | Edit `.claude/stack-config.json` manually to fix capabilities, then re-run `/setup-project` |
+| `/setup-project` pruned a skill/hook you need | Check `.claude/setup-log.md` to see what was removed. Restore from git (`git checkout -- .claude/skills/<name>/`) and remove the skill's entry from `stack-capabilities.json` so it's always kept |
+| CLAUDE.md has incorrect project details | Edit it directly — it's a regular markdown file. The toolchain reads it at runtime |
+| A rules file has wrong conventions | Edit the relevant `.claude/rules/*.md` file directly |
+| Want to re-run setup from scratch | Copy the toolchain files again from the template repo and repeat Steps 2-3 |
+
+---
+
+## Workflow for implementing a feature
+
+This is the end-to-end process for delivering a feature using the `.claude/` toolchain. Each step uses a specific agent or manual action, and `docs/` folders act as the handoff points between phases.
+
+For the full detailed guide with flowcharts and slash command inventory, see [manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md).
+
+![Feature Development Toolchain Workflow](claude-code-feature-development-toolchain-workflow.png)
+
+### Step 1 — Gather requirements
+
+Save the ticket export, spec document, or acceptance criteria into `docs/requirements/`. The planner agent reads from this folder.
+
+For Jira tickets, use the fetch script to pull content automatically:
+
+```
+./docs/scripts/fetch-jira-ticket.sh <TICKET-ID>
+```
+
+This fetches the ticket description, comments, and attached images into `docs/requirements/`. Requires `JIRA_EMAIL` and `JIRA_API_TOKEN` in `.env.development` (see `.env.development.example`). Generate a token at [https://id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens).
+
+### Step 2 — Plan
+
+```
+/plan-feature [requirements file path, ticket number, or feature description]
+```
+
+The `/plan-feature` command orchestrates three phases:
+
+1. Spawns **2-3 `codebase-qa` sub-agents** in parallel to research how reference features implement the patterns needed
+2. Optionally spawns **1-2 `impact-analyser` sub-agents** to assess what existing code will be affected
+3. Passes all findings to the `@feature-planner` agent, which synthesizes them into a file-by-file implementation plan at `docs/plans/TICKET-XXX-feature-name.md`
+
+**Comprehension checkpoint:** Verify that you can explain the feature's data flow end-to-end before moving on. If you can't trace this from the plan alone, use `@codebase-qa` to fill gaps.
+
+### Step 3 — Implement and review
+
+```
+/implement-feature docs/plans/TICKET-XXX-feature-name.md
+```
+
+The `/implement-feature` skill orchestrates:
+
+1. **Validates the plan** — checks for unresolved open questions
+2. **Spawns `@feature-implementer`** in the working directory — writes all code, runs verification, produces a change summary
+3. **Spawns `@reviewer`** — reviews the uncommitted changes for correctness and patterns compliance
+4. **Reports combined results** — change summary, verification, review findings, key files to understand
+
+### Step 4 — Iterate manually (if needed)
+
+Fix issues found by the reviewer or your own inspection. Useful slash commands for targeted work:
+
+| Command | What it does |
+|---|---|
+| `/gql` | Scaffold a GraphQL mutation + resolver + types |
+| `/plugin` | Create a Magento plugin with di.xml wiring |
+| `/email-template` | Scaffold transactional email (model + templates + config) |
+| `/react-new-widget` | Create a new React widget entry point |
+| `/layout-diff` | Compare a theme layout override with its vendor original |
+
+See [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md) for the full list of available commands, agents, and skills.
+
+### Step 5 — Quality checks
+
+```
+@preflight
+```
+
+Runs the full quality suite. The specific checks depend on your stack (see CLAUDE.md Commands). Fix any reported issues before proceeding.
+
+### Step 6 — Run tests (if applicable)
+
+```
+@test-runner changed
+```
+
+Runs tests for changed files only.
+
+### Step 7 — Commit
+
+```
+@committer
+```
+
+Analyses all uncommitted changes and proposes a logical breakdown into ordered commits following your project's commit conventions (from CLAUDE.md). Review the plan, then reply `"go"` to execute.
+
+### Step 8 — Document
+
+```
+@documenter TICKET-XXX
+```
+
+Generates an architecture document at `docs/features/TICKET-XXX-feature-name.md`. **Mandatory for multi-layer features.** After writing the document, the agent analyses the implementation for lessons learned — non-obvious patterns, gotchas, or new reuse references — and proposes them as concrete additions to `CLAUDE.md` or `.claude/rules/` for your approval.
+
+### Step 9 — Commit documentation and create PR
+
+Run `@committer` again to commit the architecture document, then create the PR.
+
+---
+
+### How `docs/` connects the steps
+
+| Folder          | Written by                | Read by                      | Purpose in the workflow         |
+| --------------- | ------------------------- | ---------------------------- | ------------------------------- |
+| `requirements/` | Developer (manual)        | `@feature-planner`           | Input: what to build            |
+| `plans/`        | `@feature-planner`        | `@feature-implementer`       | Handoff: how to build it        |
+| `features/`     | `@documenter`             | Future developers, AI agents | Output: how it was built        |
+| `manuals/`      | Maintained with toolchain | Developers, AI agents        | Reference: how to use the tools |
+
+**CLAUDE.md and `.claude/rules/` configure everything.** Every agent and skill reads CLAUDE.md for architecture, commands, and paths, and `.claude/rules/` for conventions, commit format, and reuse references.
 
 ---
 
@@ -27,29 +213,17 @@ docs/                      <- This folder -- living documentation that agents re
 
 ### Work on this project
 
-
-| Goal                                         | Where to go                                                                                                      |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Get oriented in this repo                    | `[manuals/00-getting-started/onboarding.md](manuals/00-getting-started/onboarding.md)`                           |
-| Plan and deliver a feature                   | `[manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md)`                     |
-| Debug something broken                       | `[manuals/02-playbooks/debugging.md](manuals/02-playbooks/debugging.md)`                                         |
-| Explore unfamiliar code                      | `[manuals/02-playbooks/exploration-and-investigation.md](manuals/02-playbooks/exploration-and-investigation.md)` |
-| Look up an agent or skill                    | `[manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md)`                       |
-| Understand an architecture decision          | `[manuals/05-concepts/](manuals/05-concepts/)` — one topic per file                                              |
+| Goal                                         | Where to go                                                                                                    |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Get oriented in this repo                    | [manuals/00-getting-started/onboarding.md](manuals/00-getting-started/onboarding.md)                           |
+| Plan and deliver a feature                   | [manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md)                     |
+| Debug something broken                       | [manuals/02-playbooks/debugging.md](manuals/02-playbooks/debugging.md)                                         |
+| Explore unfamiliar code                      | [manuals/02-playbooks/exploration-and-investigation.md](manuals/02-playbooks/exploration-and-investigation.md)  |
+| Look up an agent or skill                    | [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md)                       |
+| Understand an architecture decision          | [manuals/05-concepts/](manuals/05-concepts/) — one topic per file                                              |
 | Read the plan for a feature in progress      | `plans/` — one file per planned feature                                                                          |
 | Understand a completed feature's design      | `features/` — architecture documents with Mermaid diagrams                                                       |
 | Read the original requirements for a feature | `requirements/` — ticket exports and spec documents                                                              |
-
-
-### Set up this toolchain in a new project
-
-This toolchain is a **template repo**. To adopt it:
-
-1. Copy the `.claude/` directory and `docs/` directory into your project
-2. Run `/detect-stack` — auto-detects your technology stack and writes `.claude/stack-config.json`
-3. Run `/setup-project` — generates `CLAUDE.md`, prunes inapplicable skills/hooks, and configures the toolchain for your stack
-
-The toolchain supports: Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + BigCommerce, React SPA + REST/GraphQL, and more. When the Playwright MCP is configured (`.mcp.json`), agents gain browser automation capabilities: automated bug reproduction, visual regression screenshots, runtime accessibility testing, Lighthouse audits, and feature documentation screenshots.
 
 ---
 
@@ -59,7 +233,7 @@ The toolchain supports: Magento + React/Vite, Magento + Luma (pure PHP), Next.js
 
 Workflow guides, playbooks, reference docs, and architecture concepts for using the `.claude/` toolchain effectively. These are **project-portable** — all project-specific values are resolved from CLAUDE.md at runtime.
 
-See `[manuals/README.md](manuals/README.md)` for the full folder map and quick lookup table.
+See [manuals/README.md](manuals/README.md) for the full folder map and quick lookup table.
 
 **Maintained by:** the `sync-manuals-check.sh` hook automatically prompts documentation updates whenever `.claude/` tooling files or `CLAUDE.md` are modified.
 
@@ -99,97 +273,3 @@ Ticket exports, spec documents, and acceptance criteria. Drop files here before 
 Utility scripts for the development workflow (e.g., ticket fetchers). These are optional and project-specific.
 
 ---
-
-## Workflow for implementing a feature
-
-This is the end-to-end process for delivering a feature using the `.claude/` toolchain. Each step uses a specific agent or manual action, and `docs/` folders act as the handoff points between phases.
-
-For the full detailed guide with flowcharts and slash command inventory, see `[manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md)`.
-
-![Feature Development Toolchain Workflow](claude-code-feature-development-toolchain-workflow.png)
-
-### Step 1 — Gather requirements
-
-Save the ticket export, spec document, or acceptance criteria into `docs/requirements/`. The planner agent reads from this folder.
-
-### Step 2 — Plan
-
-```
-/plan-feature [requirements file path, ticket number, or feature description]
-```
-
-The `/plan-feature` command orchestrates three phases:
-
-1. Spawns **2-3 `codebase-qa` sub-agents** in parallel to research how reference features implement the patterns needed
-2. Optionally spawns **1-2 `impact-analyser` sub-agents** to assess what existing code will be affected
-3. Passes all findings to the `@feature-planner` agent, which synthesizes them into a file-by-file implementation plan at `docs/plans/TICKET-XXX-feature-name.md`
-
-**Comprehension checkpoint:** Verify that you can explain the feature's data flow end-to-end before moving on. If you can't trace this from the plan alone, use `@codebase-qa` to fill gaps.
-
-### Step 3 — Implement and review
-
-```
-/implement-feature docs/plans/TICKET-XXX-feature-name.md
-```
-
-The `/implement-feature` skill orchestrates:
-
-1. **Validates the plan** — checks for unresolved open questions
-2. **Spawns `@feature-implementer`** in the working directory — writes all code, runs verification, produces a change summary
-3. **Spawns `@reviewer`** — reviews the uncommitted changes for correctness and patterns compliance
-4. **Reports combined results** — change summary, verification, review findings, key files to understand
-
-### Step 4 — Iterate manually (if needed)
-
-Fix issues found by the reviewer or your own inspection. Use targeted slash commands for scaffolding help.
-
-### Step 5 — Quality checks
-
-```
-@preflight
-```
-
-Runs the full quality suite. The specific checks depend on your stack (see CLAUDE.md Commands). Fix any reported issues before proceeding.
-
-### Step 6 — Run tests (if applicable)
-
-```
-@test-runner changed
-```
-
-Runs tests for changed files only.
-
-### Step 7 — Commit
-
-```
-@committer
-```
-
-Analyses all uncommitted changes and proposes a logical breakdown into ordered commits following your project's commit conventions (from CLAUDE.md). Review the plan, then reply `"go"` to execute.
-
-### Step 8 — Document
-
-```
-@documenter TICKET-XXX
-```
-
-Generates an architecture document at `docs/features/TICKET-XXX-feature-name.md`. **Mandatory for multi-layer features.**
-
-### Step 9 — Commit documentation and create PR
-
-Run `@committer` again to commit the architecture document, then create the PR.
-
----
-
-### How `docs/` connects the steps
-
-
-| Folder          | Written by                | Read by                        | Purpose in the workflow                |
-| --------------- | ------------------------- | ------------------------------ | -------------------------------------- |
-| `requirements/` | Developer (manual)        | `@feature-planner`             | Input: what to build                   |
-| `plans/`        | `@feature-planner`        | `@feature-implementer`         | Handoff: how to build it               |
-| `features/`     | `@documenter`             | Future developers, AI agents   | Output: how it was built               |
-| `manuals/`      | Maintained with toolchain | Developers, AI agents          | Reference: how to use the tools        |
-
-
-**CLAUDE.md configures everything.** Every agent and skill reads CLAUDE.md for project-specific values (paths, commands, conventions).

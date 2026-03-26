@@ -16,7 +16,7 @@ For canonical agent and skill definitions, use [`../03-reference/ai-tools-refere
 | Magento plugin or interceptor                  | `/plugin`                                   |
 | Magento event observer                         | `/observer`                                 |
 | Theme template/layout override                 | `/create-theme-override`                    |
-| DOM bridge hook for Magento JS ↔ React        | `/react-dom-hook`                           |
+| DOM bridge hook for Magento JS ↔ React         | `/react-dom-hook`                           |
 | Admin-configurable settings (system.xml)       | `/admin-config`                             |
 | New DB column, table, or EAV attribute         | `/data-patch`                               |
 | Transactional emails (confirmation + internal) | `/email-template`                           |
@@ -24,91 +24,7 @@ For canonical agent and skill definitions, use [`../03-reference/ai-tools-refere
 
 ---
 
-## Simple features
-
-```mermaid
-flowchart TD
-    A[1️⃣ Phase 1: Understand area<br/>/module-overview or @codebase-qa] --> B[2️⃣ Phase 2: Check impact<br/>@impact-analyser]
-    B --> C[3️⃣ Phase 3: Implement change<br/>Edit files or use skill]
-    C --> D[4️⃣ Phase 4: QA baseline<br/>@preflight]
-    D --> E{Tests exist?}
-    E -- Yes --> F[Run tests<br/>@test-runner changed]
-    E -- No --> G[5️⃣ Phase 5: Review<br/>@reviewer]
-    F --> G
-    G --> H{Any blockers?}
-    H -- Yes --> C
-    H -- No --> I["6️⃣ Phase 6: Commit<br/>@committer then reply 'go'"]
-```
-
-For changes contained within 1–3 files or a well-understood area. It is a workflow that combines the use of skills and agents.
-
-### Phase 1 — Understand
-
-```
-/module-overview <VendorNamespace>_<Module>
-— or —
-@codebase-qa How does [thing] work?
-```
-
-Use these to quickly understand the module boundary and existing implementation pattern before editing.
-
-### Phase 2 — Check impact
-
-```
-@impact-analyser [file or type you're about to change]
-```
-
-Run impact analysis before touching files so you catch cross-layer dependencies early.
-
-### Phase 3 — Implement
-
-Edit files directly, or use a skill for the feature type you're implementing.
-
-### Phase 4 — QA
-
-```
-@preflight
-```
-
-Run full checks after implementation. Preflight now includes a runtime smoke test via Playwright (when available) — it navigates key pages and checks for JS errors, hydration failures, and broken layouts beyond what static analysis catches.
-
-For tests (if test infrastructure is set up):
-
-```
-@test-runner changed
-```
-
-**Optional — visual regression check:** If your change touches CSS, layout, or component files, run a visual regression check to catch unintended style side-effects:
-
-```
-/visual-regression http://localhost:3000/affected-page
-```
-
-**Optional — performance check:** If your change could affect page load performance:
-
-```
-/lighthouse-audit http://localhost:3000/affected-page
-```
-
-### Phase 5 — Review
-
-```
-@reviewer
-```
-
-Review the branch diff and fix any blockers before committing.
-
-### Phase 6 — Commit
-
-```
-@committer
-```
-
-The committer proposes a logical commit plan. Review it, then reply `"go"` to execute.
-
----
-
-## Complex features
+## Complex feature implementation
 
 ```mermaid
 flowchart TD
@@ -298,8 +214,8 @@ See existing files in `docs/features/` for examples.
 
 ## Branch and commit conventions
 
-| Item               | Convention                                                          |
-| ------------------ | ------------------------------------------------------------------- |
+| Item               | Convention                                                                |
+| ------------------ | ------------------------------------------------------------------------- |
 | Branch name        | `feature/TICKET-XXX-short-description` or `bugfix/TICKET-XXX-description` |
 | Commit message     | `TICKET-XXX: Verb phrase describing the change`                           |
 | Commit granularity | One logical unit per commit — the `committer` agent handles this          |
