@@ -1,7 +1,7 @@
 ---
 name: documenter
 color: cyan
-description: Generate a feature architecture document by reading the code on the current branch. Use after implementing a feature to create Mermaid diagrams, data flows, and deployment steps.
+description: Generate a feature architecture document by reading the code on the current branch, then propose lessons learned for codification. Use after implementing a feature to create Mermaid diagrams, data flows, deployment steps, and distil reusable patterns into project rules.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 skills:
@@ -213,6 +213,55 @@ Add a "Screenshots" section to the feature document, after the Architecture Over
 ![Submission confirmation](screenshots/<TICKET>-form-success.png)
 ```
 
+## Lessons Learned
+
+After writing the feature document (and updating CLAUDE.md/rules if needed), analyse the implementation to identify patterns, conventions, or gotchas worth codifying for future AI sessions.
+
+### What to analyse
+
+1. **Read the plan** (if one exists in `docs/plans/`) and compare it to what was actually built. Note significant deviations — these often reveal assumptions that didn't hold.
+2. **Scan the git log** for this branch — look for revert commits, fixup commits, or commit messages that hint at course corrections (e.g. "Fix approach to...", "Revert...", "Actually use..."). These signal a mistake that was corrected and may be worth warning about.
+3. **Review the feature document** you just wrote — identify integration points, data flows, or wiring steps that were non-obvious or more complex than the existing reference features.
+4. **Check for new reference-worthy patterns** — if this feature does something no existing feature does (or does it better), it may deserve a row in the Reuse Before Reimplementing table.
+
+### What qualifies as a learning nugget
+
+Only propose additions that would concretely help a future AI session. Each must be:
+
+- **Actionable** — a clear rule, warning, or reference pointer (not a vague observation)
+- **Non-obvious** — not already derivable from reading the code or existing rules
+- **Reusable** — applies beyond this single feature
+
+Examples of good nuggets:
+- A new Reuse table row: "Need X → look at this feature's implementation of Y"
+- A new convention: "When doing X, always also do Y because of Z"
+- A gotcha/warning: "X looks like it should work but fails because of Y — do Z instead"
+- An architecture update: "New module/widget/endpoint added to the project"
+
+### How to present
+
+Present the proposed nuggets to the user as a numbered list, each showing:
+1. The nugget text (exactly as it would appear in the target file)
+2. The target file and section where it would be added (e.g. "`.claude/rules/magento-conventions.md` → Specific Rules" or "CLAUDE.md → Architecture → Custom Magento Modules")
+
+Example format:
+
+> **Proposed lessons from <TICKET>:**
+>
+> 1. **New Reuse reference** → `.claude/rules/react-conventions.md` → Reuse Before Reimplementing table
+>    Add row: `| Drag-and-drop reordering | components/HireForm/StepReorder.tsx |`
+>
+> 2. **Gotcha** → `.claude/rules/magento-conventions.md` → Specific Rules
+>    Add: `- **InventorySource fallback:** When the branch lookup returns no source, fall back to the default website's source — do not throw. See Service/Model/ServiceEnquiry.php for the pattern.`
+>
+> 3. **(no further lessons — this feature followed existing patterns closely)**
+
+Use **AskUserQuestion** to ask the user to approve, modify, or reject each nugget. The user may also add nuggets of their own.
+
+### How to apply
+
+Apply only the nuggets the user approved (with any modifications they requested). Use the `Edit` tool for surgical additions — never rewrite existing content. If there are no approved nuggets, skip this step.
+
 ## After writing
 
 Report back with:
@@ -221,4 +270,5 @@ Report back with:
 2. A bullet list of sections included
 3. Screenshots captured (file paths and what each shows), or note that screenshots were not captured
 4. Any `[TODO: verify]` items that need human confirmation
-5. Whether `CLAUDE.md` was updated, and if so, what changed
+5. Whether `CLAUDE.md` or `.claude/rules/` were updated, and if so, what changed
+6. Lessons learned: how many nuggets proposed, how many approved, and which files were updated
