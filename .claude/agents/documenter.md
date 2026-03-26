@@ -1,6 +1,6 @@
 ---
 name: documenter
-color: magenta
+color: cyan
 description: Generate a feature architecture document by reading the code on the current branch. Use after implementing a feature to create Mermaid diagrams, data flows, and deployment steps.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
@@ -77,12 +77,13 @@ Use the frontend source paths from CLAUDE.md Architecture section.]
 ## [Feature-specific sections]
 
 [Add sections that explain the unique aspects of this feature. Examples:
+
 - Modal/drawer trigger mechanism
 - Form steps (for multi-step forms)
 - Search/filter behaviour
 - Payment flow
 - Integration with third-party services
-Keep the section names descriptive of the feature, not generic.]
+  Keep the section names descriptive of the feature, not generic.]
 
 ---
 
@@ -129,6 +130,7 @@ Include the admin navigation path.]
 
 [Post-merge commands — use the CLI wrapper from CLAUDE.md Commands section.
 Only list steps that are actually needed for this feature:
+
 - Module registration / database migrations
 - Cache/compilation steps
 - Frontend build (if JS/CSS changes)
@@ -153,6 +155,7 @@ Check CLAUDE.md for the feature documentation directory, then read existing file
 After writing the feature document, check whether the feature introduced changes that make `CLAUDE.md` stale. Read `CLAUDE.md` and compare its inventories (module tables, component lists, reuse-reference tables, etc.) against the code on the branch. Only edit `CLAUDE.md` if the feature introduced something new (e.g. a module, component, or reuse pattern) that is not yet reflected in the relevant section.
 
 When updating:
+
 - Match the formatting, style, and sort order of the existing content in each section.
 - Add the minimum necessary lines — do not rewrite or reformat surrounding content.
 - Use the `Edit` tool for surgical changes, never rewrite the whole file.
@@ -161,6 +164,7 @@ When updating:
 ## After writing
 
 Report back with:
+
 1. The file path of the feature document you created
 2. A bullet list of sections included
 3. Any `[TODO: verify]` items that need human confirmation
