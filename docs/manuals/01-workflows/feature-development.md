@@ -70,10 +70,24 @@ Edit files directly, or use a skill for the feature type you're implementing.
 @preflight
 ```
 
-Run full checks after implementation. For tests (if test infrastructure is set up):
+Run full checks after implementation. Preflight now includes a runtime smoke test via Playwright (when available) — it navigates key pages and checks for JS errors, hydration failures, and broken layouts beyond what static analysis catches.
+
+For tests (if test infrastructure is set up):
 
 ```
 @test-runner changed
+```
+
+**Optional — visual regression check:** If your change touches CSS, layout, or component files, run a visual regression check to catch unintended style side-effects:
+
+```
+/visual-regression http://localhost:3000/affected-page
+```
+
+**Optional — performance check:** If your change could affect page load performance:
+
+```
+/lighthouse-audit http://localhost:3000/affected-page
 ```
 
 ### Phase 5 — Review
@@ -165,7 +179,7 @@ The review feedback is **informational output for the user** — it does not tri
 @preflight
 ```
 
-Runs the full preflight quality suite. The specific checks depend on your stack — see CLAUDE.md Commands section for what runs. Typically includes linting, type-checking, production build, and accessibility audits for frontend; code style and static analysis for backend.
+Runs the full preflight quality suite. The specific checks depend on your stack — see CLAUDE.md Commands section for what runs. Typically includes linting, type-checking, production build, accessibility audits for frontend, runtime smoke test via Playwright (navigates pages, checks for JS errors and hydration failures), and code style and static analysis for backend.
 
 Fix any reported issues before committing.
 
@@ -174,6 +188,13 @@ If you only need one layer while iterating, pass the layer name:
 ```
 /preflight react    # Frontend-only checks
 /preflight php      # Backend-only checks
+```
+
+**Optional — visual regression and performance:** If the feature includes CSS, layout, or component changes, consider running these before committing:
+
+```
+/visual-regression http://localhost:3000/affected-page    # Screenshot comparison
+/lighthouse-audit http://localhost:3000/affected-page     # Performance/a11y scores
 ```
 
 ### Phase 4 — Run tests (if applicable)
@@ -200,7 +221,7 @@ The committer analyses all uncommitted changes, reads the modified files to unde
 
 **This phase is not optional.** Every complex feature must have an architecture document before the PR is created. Without it, future developers (and AI agents) have no way to understand the feature's design without re-reading every file.
 
-The documenter reads the code on the current branch and generates `docs/features/TICKET-XXX-feature-name.md`. The document includes Mermaid diagrams, module structure, data flows, admin configuration, and deployment steps. Review the generated document, resolve any `[TODO: verify]` items, and commit it as a final commit on the branch.
+The documenter reads the code on the current branch and generates `docs/features/TICKET-XXX-feature-name.md`. The document includes Mermaid diagrams, module structure, data flows, admin configuration, deployment steps, and feature screenshots captured via Playwright (when the dev server is available). Review the generated document, resolve any `[TODO: verify]` items, and commit it as a final commit on the branch.
 
 ---
 

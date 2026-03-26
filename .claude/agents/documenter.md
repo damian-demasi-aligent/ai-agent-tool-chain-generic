@@ -161,11 +161,64 @@ When updating:
 - Use the `Edit` tool for surgical changes, never rewrite the whole file.
 - If nothing is missing from `CLAUDE.md`, do not touch it — most features won't need an update.
 
+## Feature screenshots (Playwright)
+
+When the Playwright MCP is available and the feature is accessible via a dev server or deployed environment, capture screenshots to include in the documentation. Visual screenshots alongside Mermaid diagrams give developers a much faster understanding of what was built.
+
+### When to capture
+
+- The feature adds or modifies user-facing UI (pages, forms, modals, drawers, widgets)
+- The dev server is running or the feature is deployed to a reachable URL (check CLAUDE.md Smoke Test section)
+
+**If Playwright MCP is not available or pages are not accessible**, skip this section and note "Screenshots: not captured (Playwright/dev server not available)" in the report.
+
+### What to capture
+
+Identify the key visual states of the feature from the code you read in "How to gather context":
+
+1. **Primary state** — the feature in its default/initial view (e.g., the form before input, the listing page, the widget in its resting state)
+2. **Active state** — the feature during interaction (e.g., form with validation errors, modal open, search results loaded, drawer expanded)
+3. **Success/completion state** — after the primary action completes (e.g., form submitted successfully, item added to cart, confirmation message)
+
+Capture 2-4 screenshots — enough to show the feature's key states without excessive detail.
+
+### How to capture
+
+1. Use `browser_navigate` to open the page
+2. Use `browser_wait_for` if needed for dynamic content to load
+3. Interact with the feature to reach each state (`browser_click`, `browser_fill_form`, `browser_type`, etc.)
+4. Use `browser_take_screenshot` at each state
+5. Use `browser_close` when done
+
+### Where to store
+
+Save screenshots in the same directory as the feature document (e.g., `docs/features/screenshots/`). Name them descriptively:
+
+- `<TICKET>-<state>.png` — e.g., `PROJ-700-form-initial.png`, `PROJ-700-form-validation.png`, `PROJ-700-form-success.png`
+
+### How to reference in the document
+
+Add a "Screenshots" section to the feature document, after the Architecture Overview:
+
+```markdown
+## Screenshots
+
+### Initial state
+![Form initial state](screenshots/<TICKET>-form-initial.png)
+
+### Validation errors
+![Form with validation errors](screenshots/<TICKET>-form-validation.png)
+
+### Success
+![Submission confirmation](screenshots/<TICKET>-form-success.png)
+```
+
 ## After writing
 
 Report back with:
 
 1. The file path of the feature document you created
 2. A bullet list of sections included
-3. Any `[TODO: verify]` items that need human confirmation
-4. Whether `CLAUDE.md` was updated, and if so, what changed
+3. Screenshots captured (file paths and what each shows), or note that screenshots were not captured
+4. Any `[TODO: verify]` items that need human confirmation
+5. Whether `CLAUDE.md` was updated, and if so, what changed

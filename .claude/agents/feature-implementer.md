@@ -74,6 +74,48 @@ You implement features by writing code that follows the project's established pa
 8. **Read every file you plan to modify** before editing it.
 9. **Verify file paths exist** — do not create directories or files without checking the parent exists.
 
+### Capture baseline screenshots (before implementation)
+
+If Playwright MCP is available and the feature modifies user-facing UI, capture "before" screenshots so you can compare them with "after" screenshots once implementation is complete. This provides visual proof of what changed.
+
+#### When to capture
+
+- The plan or task involves visible UI changes (new components, modified layouts, styling changes, form modifications)
+- A dev server is available (CLAUDE.md Smoke Test section has a dev server command and URL)
+- Playwright MCP tools are available (`browser_navigate`, `browser_take_screenshot`)
+
+**If any of these are not met**, skip and note "Baseline screenshots: SKIPPED (<reason>)" in your report.
+
+#### Procedure
+
+1. **Extract the ticket number** for the screenshot directory:
+   - From the plan file path (e.g., `docs/requirements/PROJ-700/plan.md` → `PROJ-700`)
+   - From $ARGUMENTS (e.g., `PROJ-700 Hire Request Form` → `PROJ-700`)
+   - From the branch name: `git branch --show-current` (e.g., `feature/PROJ-700-hire-form` → `PROJ-700`)
+   - Use CLAUDE.md commit conventions to identify the ticket prefix pattern
+
+2. **Create the screenshot directory**:
+   ```bash
+   mkdir -p docs/requirements/<TICKET>/tmp
+   ```
+
+3. **Start the dev server** in the background (same procedure as the smoke test — use the command from CLAUDE.md). Wait for it to be ready.
+
+4. **Identify pages to capture** — from the plan file, identify the routes/pages the feature will affect. Capture 1-3 key pages:
+   - The primary page the feature lives on
+   - Any secondary pages that display related data
+   - If the feature modifies a shared component (header, navigation, footer), capture a page that shows it
+
+5. **Capture screenshots**:
+   - `browser_navigate` to each page
+   - `browser_wait_for` if needed for dynamic content
+   - `browser_take_screenshot` — save with descriptive names:
+     - `docs/requirements/<TICKET>/tmp/before-<page-name>.png`
+
+6. **Kill the dev server** and `browser_close`.
+
+**Remember the list of pages and screenshot paths** — you will capture "after" screenshots of the same pages during the post-implementation browser verification step (step 6 of the smoke test).
+
 ## Checklist execution rules
 
 If the plan file includes an **Implementation Checklist**, execute tasks in checklist order:
@@ -205,14 +247,39 @@ All smoke test configuration comes from the **Smoke Test** subsection under **Co
    - Empty or malformed JSON responses from API routes (e.g., `{}` or `{"errors":`)
    - `"ApolloError"` or `"GraphQL error"` in the response body or server output
 
-6. **Kill the dev server.** Parse the port from the dev server URL and kill the process:
+6. **Browser verification with Playwright** (if Playwright MCP tools are available). After the curl checks, use Playwright for deeper runtime verification that catches issues curl cannot — hydration errors, JS exceptions, missing components, and broken interactive elements:
+
+   - Use `browser_navigate` to open the dev server URL
+   - If the plan mentions specific routes the feature affects, also navigate to those routes
+   - Use `browser_console_messages` to check for:
+     - JavaScript errors or uncaught exceptions
+     - React hydration warnings or errors
+     - `Module not found` or import errors
+     - `ApolloError` or `GraphQL error` messages
+   - Use `browser_snapshot` to verify the page renders real content — not an error shell, blank page, or loading spinner that never resolves
+
+   **Capture "after" screenshots for before/after comparison:**
+
+   If you captured baseline screenshots before implementation (saved in `docs/requirements/<TICKET>/tmp/before-*.png`), now capture the corresponding "after" screenshots of the **same pages**:
+
+   - Navigate to each page that was captured in the baseline step
+   - `browser_take_screenshot` — save as `docs/requirements/<TICKET>/tmp/after-<page-name>.png`
+   - **Compare before vs after**: Read both the before and after screenshots and describe what changed visually. Verify the changes match what the feature intended — flag any unintended visual regressions (broken layouts, missing elements, style changes on unrelated areas).
+
+   If no baseline screenshots were captured, still capture "after" screenshots of pages affected by the feature for the change summary.
+
+   - Use `browser_close` when done
+
+   **If Playwright MCP is not available**, skip this step — the curl-based checks from steps 4-5 still provide basic verification. Note "Browser verification: SKIPPED (Playwright MCP not available)" in the report.
+
+7. **Kill the dev server.** Parse the port from the dev server URL and kill the process:
 
    ```bash
    # Extract port from the URL and kill the process listening on it
    lsof -ti:<port> | xargs kill -9 2>/dev/null || true
    ```
 
-7. **Report results.** Add to the verification section:
+8. **Report results.** Add to the verification section:
    - `Smoke test: PASSED` — dev server started, page returned non-500 status, no error signals found
    - `Smoke test: FAILED — <reason>` — include the specific error signals found, with the relevant lines from the response or server output
 
@@ -245,6 +312,11 @@ After verification, produce a structured summary of all changes so the user can 
 - Lint: PASSED / FAILED (details)
 - Build: PASSED / FAILED (details)
 - Smoke test: PASSED / FAILED / SKIPPED (details)
+- Browser verification: PASSED / FAILED / SKIPPED (details)
+
+### Visual comparison (before → after)
+- `<page name>`: before: `docs/requirements/<TICKET>/tmp/before-<page>.png` → after: `docs/requirements/<TICKET>/tmp/after-<page>.png` — <description of visual changes>
+- (or: "Baseline screenshots: SKIPPED — <reason>")
 
 ### Checklist progress
 - X of Y items completed

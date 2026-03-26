@@ -48,7 +48,7 @@ This toolchain is a **template repo**. To adopt it:
 2. Run `/detect-stack` — auto-detects your technology stack and writes `.claude/stack-config.json`
 3. Run `/setup-project` — generates `CLAUDE.md`, prunes inapplicable skills/hooks, and configures the toolchain for your stack
 
-The toolchain supports: Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + BigCommerce, React SPA + REST/GraphQL, and more.
+The toolchain supports: Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + BigCommerce, React SPA + REST/GraphQL, and more. When the Playwright MCP is configured (`.mcp.json`), agents gain browser automation capabilities: automated bug reproduction, visual regression screenshots, runtime accessibility testing, Lighthouse audits, and feature documentation screenshots.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: preflight
 color: blue
-description: Run frontend and backend preflight checks (lint, types, build, a11y, PHP quality) and report results. Use before committing or pushing to verify the codebase is clean.
+description: Run frontend and backend preflight checks (lint, types, build, a11y, runtime smoke test via Playwright, PHP quality) and report results. Use before committing or pushing to verify the codebase is clean.
 tools: Bash, Read, Grep, Glob
 model: sonnet
 skills:
@@ -117,19 +117,71 @@ Severity guide:
 - **WARNING**: Degraded experience for assistive technology users (missing error linkage, no live region for dynamic content)
 - **NOTE**: Improvement opportunity (could add aria-live, heading hierarchy suggestion)
 
+### 5. Runtime smoke test (Playwright)
+
+This step uses the Playwright MCP to verify that pages render without runtime errors that static checks (steps 1-3) cannot catch — hydration mismatches, missing providers, broken imports at runtime, and server-side rendering failures.
+
+#### When to skip
+
+- Playwright MCP tools are not available (no `browser_navigate` tool) — note "Runtime smoke test: SKIPPED (Playwright MCP not available)"
+- CLAUDE.md has no "Smoke Test" subsection with a dev server command and URL — note "Runtime smoke test: SKIPPED (not configured in CLAUDE.md)"
+- No frontend files were changed (`git diff <main-branch> --name-only` shows no `.ts`, `.tsx`, `.js`, `.jsx`, `.css`, `.less` files) — note "Runtime smoke test: SKIPPED (no frontend changes)"
+
+#### Procedure
+
+1. **Read CLAUDE.md** for the Smoke Test configuration — extract the dev server command and dev server URL.
+
+2. **Start the dev server** in the background using the Bash tool with `run_in_background: true`.
+
+3. **Wait for the server** — poll with `curl` up to 60 seconds:
+
+   ```bash
+   CHECK_URL="<dev server URL from CLAUDE.md>"
+   for i in $(seq 1 20); do
+     if curl -s -o /dev/null -w '%{http_code}' "$CHECK_URL" 2>/dev/null | grep -qE '^[23]'; then
+       echo "Server ready after $((i * 3)) seconds"
+       break
+     fi
+     sleep 3
+   done
+   ```
+
+   If the server never responds, report "Runtime smoke test: FAILED — dev server did not start within 60s" and include the last 50 lines of server output, then kill the process and continue.
+
+4. **Navigate key pages with Playwright**:
+   - Use `browser_navigate` to visit the dev server root URL
+   - Use `browser_navigate` to visit one data-fetching route (e.g., a category or product page — look in CLAUDE.md Architecture for route examples)
+
+5. **Collect evidence** at each page:
+   - `browser_console_messages` — check for JS errors, React errors, hydration warnings
+   - `browser_snapshot` — verify the page rendered meaningful content (not just an error shell or blank page)
+   - Look for error indicators in the snapshot: "Internal Server Error", "Unhandled Runtime Error", "Module not found", "Cannot find module", "Hydration failed"
+
+6. **Kill the dev server**:
+
+   ```bash
+   lsof -ti:<port> | xargs kill -9 2>/dev/null || true
+   ```
+
+7. **Close the browser**: use `browser_close` to release resources.
+
+8. **Report results**:
+   - `Runtime smoke test: PASSED` — pages rendered without JS errors or error indicators
+   - `Runtime smoke test: FAILED — <details>` — list console errors, broken pages, and error indicators found
+
 ### Backend checks
 
-### 5. PHP code style
+### 6. PHP code style
 
 Run the project's code style check command from CLAUDE.md Commands section.
 
-### 6. PHP static analysis
+### 7. PHP static analysis
 
 Run the project's static analysis command from CLAUDE.md Commands section.
 
 ## Output format
 
-For each check (1–6), report:
+For each check (1–7), report:
 
 - **Pass** or **Fail** (for checks 1–3 and 5–6) / **Issues found** or **No issues** (for check 4)
 - If failed: the specific errors (file paths + error messages), grouped by file

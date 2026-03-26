@@ -1,7 +1,7 @@
 ---
 name: frontend-debugger
 color: red
-description: Debug frontend/UI bugs using runtime evidence. Starts a log server, instruments code, collects logs, and fixes based on evidence. Use when investigating UI bugs, state issues, or unexpected behavior that needs runtime data.
+description: Debug frontend/UI bugs using runtime evidence. Starts a log server, instruments code, collects logs, and fixes based on evidence. When Playwright MCP is available, automates bug reproduction and verification via browser automation instead of asking the user to manually interact. Use when investigating UI bugs, state issues, or unexpected behavior that needs runtime data.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 skills:
@@ -19,6 +19,17 @@ You debug frontend bugs using **runtime evidence**, never guesses. The `debug-fr
 1. **Read CLAUDE.md** — understand the project's architecture, directory structure, and frontend stack.
 2. **Understand the bug** — read the user's description carefully. Identify the affected component, page, or interaction.
 3. **Read the relevant source code** — before forming hypotheses, read the files involved in the reported bug to understand the current implementation.
+
+## Playwright browser automation
+
+When the Playwright MCP is available, use it to **automate bug reproduction and verification** instead of asking the user to manually interact with the browser. This eliminates the human-in-the-loop for reproduction steps and enables:
+
+- **Automated reproduction**: Navigate pages, click elements, fill forms, and trigger the buggy interaction programmatically via `browser_navigate`, `browser_click`, `browser_fill_form`, `browser_type`, etc.
+- **Console & network evidence**: Capture browser console errors and network failures directly via `browser_console_messages` and `browser_network_requests` — no instrumentation needed for these
+- **Visual evidence**: Take screenshots at key points (before fix, after fix) using `browser_take_screenshot`
+- **DOM inspection**: Use `browser_snapshot` to inspect the accessibility tree and page structure when the bug involves missing elements, wrong content, or layout issues
+
+The `debug-frontend` skill's Phase 4 and Phase 7 include Playwright-assisted steps. If Playwright MCP is not available, fall back to manual reproduction (ask the user).
 
 ## Debugging workflow
 

@@ -12,12 +12,12 @@ Agents are autonomous subprocesses invoked with `@agent-name`. They run independ
 |---|---|---|
 | `codebase-qa` | `@codebase-qa [question]` | Answer "how does X work" questions by reading the actual source. Returns file paths and line references. |
 | `committer` | `@committer` | Analyse uncommitted changes, propose a logical commit breakdown, and execute after approval. [Two-phase workflow.](#committer) |
-| `documenter` | `@documenter [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, and deployment steps. |
-| `feature-implementer` | `@feature-implementer [plan or task]` | Write code across all project layers following project conventions. Produces a change summary with verification results. Best used via `/implement-feature` which also orchestrates the code review. |
+| `documenter` | `@documenter [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, deployment steps, and feature screenshots (via Playwright when available). |
+| `feature-implementer` | `@feature-implementer [plan or task]` | Write code across all project layers following project conventions. Captures before/after screenshots (via Playwright) for visual comparison, runs static checks and browser verification, and produces a change summary with verification results. Best used via `/implement-feature` which also orchestrates the code review. |
 | `feature-planner` | `@feature-planner [feature description]` | Produce a file-by-file implementation plan from requirements and optional pre-researched findings. Best used via `/plan-feature` which provides research automatically. |
 | `impact-analyser` | `@impact-analyser [file, type, or description]` | Trace all dependencies of a target and report what else will need to change. |
-| `preflight` | `@preflight` | Run full preflight quality checks (see CLAUDE.md Commands for the specific checks). Report results only — never modifies files. |
-| `reviewer` | `@reviewer` | Review the current branch diff against the main branch (from CLAUDE.md). Returns per-file issues with severity and a merge verdict. |
+| `preflight` | `@preflight` | Run full preflight quality checks including runtime smoke test via Playwright (see CLAUDE.md Commands for the specific checks). Report results only — never modifies files. |
+| `reviewer` | `@reviewer` | Review the current branch diff against the main branch (from CLAUDE.md). Includes visual diff with screenshots when CSS/layout/component files changed (via Playwright). Returns per-file issues with severity and a merge verdict. |
 | `test-runner` | `@test-runner [scope?]` | Run the Vitest test suite and report results. Accepts a component name, file path, or `changed` to run only tests for changed files. Guides setup if test infrastructure is missing. |
 
 ### `committer` — two-phase workflow
@@ -75,8 +75,10 @@ Skills are invoked with `/skill-name` in the conversation. They run in the curre
 | `/preflight [react\|php]` | Run quality checks — `react` for frontend (ESLint + TypeScript + Vite build), `php` for backend (PHPCS + PHPStan), or omit for both. |
 | `/react-add-tests [target or "setup"]` | Write Vitest tests for a component, hook, or provider. Use `"setup"` to bootstrap test infrastructure. |
 | `/react-sync-types [module?]` | Compare `schema.graphqls` definitions against the project's TypeScript types file and GQL template literals (paths from CLAUDE.md). Reports mismatches. |
-| `/react-debug-widget [name]` | Trace the full integration chain for a React widget and identify the broken link. |
-| `/debug-frontend [project path?]` | Debug frontend bugs with runtime evidence. Starts a local log server, instruments code with hypotheses-tagged logging, and captures logs server-side so you never need to copy-paste from DevTools. |
+| `/react-debug-widget [name]` | Trace the full integration chain for a React widget and identify the broken link. When Playwright MCP is available, also verifies mount points, React initialisation, and data attributes in the live browser. |
+| `/debug-frontend [project path?]` | Debug frontend bugs with runtime evidence. Starts a local log server, instruments code with hypotheses-tagged logging, and captures logs server-side. When Playwright MCP is available, automates bug reproduction and verification — no manual browser interaction needed. |
+| `/visual-regression [url1] [url2]` | Capture screenshots of pages and compare for unintended visual changes. Infers affected pages from `git diff` if no URLs provided. Requires Playwright MCP. |
+| `/lighthouse-audit [url1] [url2]` | Run Lighthouse performance, accessibility, best practices, and SEO audits. Reports scores, core web vitals, and failed audits with thresholds. |
 
 #### Git
 
@@ -93,7 +95,8 @@ These are loaded automatically into agents that declare them. They inject projec
 |---|---|---|
 | `less-theme` | `feature-implementer` | LESS and CSS theming conventions for the Magento theme (reads paths from CLAUDE.md). |
 | `magento-module` | `feature-implementer`, `feature-planner`, `committer`, `reviewer`, `documenter` | Magento 2 module structure and PHP conventions. |
-| `react-a11y-check` | `feature-implementer`, `reviewer`, `preflight` | Accessibility patterns: forms, dialogs, dynamic content, error states. |
+| `react-a11y-check` | `feature-implementer`, `reviewer`, `preflight` | Accessibility patterns: forms, dialogs, dynamic content, error states. Includes runtime Playwright checks (keyboard nav, focus traps, live regions). |
+| `visual-regression` | `reviewer` | Screenshot capture and comparison for detecting unintended visual changes. Used automatically when CSS/layout/component files are in the diff. |
 | `react-error-handling` | `feature-implementer`, `feature-planner`, `reviewer` | `ActionResult<T>` pattern, Zod `safeParse`, error display. |
 | `react-patterns` | `feature-implementer`, `feature-planner`, `committer`, `reviewer`, `documenter`, `test-runner` | React component conventions, state, DOM integration, styling. |
 | `react-widget-wiring` | `feature-implementer`, `feature-planner`, `reviewer`, `documenter` | `data-react-widget` mounting, data attributes, script loading. |
@@ -124,7 +127,9 @@ These are loaded automatically into agents that declare them. They inject projec
 | My React widget isn't rendering | `/react-debug-widget` |
 | I need runtime evidence to debug a frontend bug | `/debug-frontend` — instruments code, captures logs server-side, no DevTools copy-paste needed |
 | My GraphQL types are out of sync | `/react-sync-types` |
-| I want to run quality checks (React + PHP) | `@preflight` |
+| I want to check for visual regressions after CSS/layout changes | `/visual-regression` — captures screenshots via Playwright and flags unintended changes |
+| I want to run a Lighthouse performance/a11y audit | `/lighthouse-audit` — reports scores, core web vitals, and failed audits |
+| I want to run quality checks (React + PHP) | `@preflight` — now includes runtime smoke test via Playwright when available |
 | I want to run quality checks for one stack only | `/preflight react` or `/preflight php` |
 | I want to add tests | `/react-add-tests` |
 | I want to run existing tests | `@test-runner` or `@test-runner changed` |

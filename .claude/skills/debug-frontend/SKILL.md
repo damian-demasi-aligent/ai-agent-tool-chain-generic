@@ -213,7 +213,7 @@ debug_log('Function entry', {'user_id': user_id, 'type': type(user_id)}, 'H1')
 
 ──────────
 
-### Phase 4: Clear and Reproduce
+### Phase 4: Reproduce
 
 1. Clear logs:
 
@@ -221,7 +221,28 @@ debug_log('Function entry', {'user_id': user_id, 'type': type(user_id)}, 'H1')
    : > /path/to/project/.debug/debug-$SESSION_ID.log
    ```
 
-2. Provide reproduction steps:
+2. **Reproduce with Playwright (preferred)** — if Playwright MCP tools are available (`browser_navigate`, `browser_click`, etc.), automate the reproduction instead of asking the user:
+
+   a. **Navigate** to the affected page using `browser_navigate`.
+
+   b. **Perform the interaction sequence** that triggers the bug — use `browser_click`, `browser_fill_form`, `browser_type`, `browser_press_key`, `browser_select_option`, `browser_hover` as needed. Follow the reproduction steps identified from the bug description.
+
+   c. **Capture browser evidence** immediately after reproducing:
+      - `browser_console_messages` — collect JS errors, React errors, warnings
+      - `browser_network_requests` — check for failed API calls, 4xx/5xx responses, CORS errors
+      - `browser_take_screenshot` — capture the visual state showing the bug
+
+   d. **Wait for instrumented logs** to arrive from the debug server (the logging calls added in Phase 3 fire when the page runs):
+      ```bash
+      sleep 2  # Allow async log delivery
+      cat /path/to/project/.debug/debug-$SESSION_ID.log
+      ```
+
+   e. If the page or interaction didn't trigger the instrumentation (e.g., the page needs a full reload with the new code), use `browser_navigate` to reload or navigate again.
+
+3. **Manual fallback** — if Playwright MCP is not available, or the reproduction requires complex user context that cannot be automated (e.g., specific auth state, mobile device, or third-party OAuth flow):
+
+   Provide reproduction steps to the user:
 
    ```xml
    <reproduction_steps>
@@ -232,7 +253,7 @@ debug_log('Function entry', {'user_id': user_id, 'type': type(user_id)}, 'H1')
    </reproduction_steps>
    ```
 
-3. User reproduces bug
+   Wait for user to confirm they have reproduced the bug, then read the logs.
 
 ──────────
 
@@ -262,6 +283,15 @@ Hypothesis H2: score is string
 - **REJECTED**: Logs disprove it
 - **INCONCLUSIVE**: Need more instrumentation
 
+**Additional evidence from Playwright** (if used in Phase 4):
+
+Review the console messages and network requests captured during reproduction:
+- Console errors may reveal uncaught exceptions, failed assertions, or React errors not covered by your instrumentation
+- Network failures may show CORS issues, 404s, or backend errors causing the bug
+- Cross-reference Playwright evidence with instrumented logs to build a complete picture of the bug
+
+Use `browser_snapshot` to inspect the current DOM state if the bug involves missing elements, wrong attributes, or unexpected page structure.
+
 **If all INCONCLUSIVE/REJECTED**: Generate new hypotheses, add more logs, iterate.
 
 ──────────
@@ -283,7 +313,9 @@ debugLog("Function entry", { userId, runId: "post-fix" }, "H1");
 ### Phase 7: Verify
 
 1. Clear logs
-2. User reproduces (bug should be gone)
+2. **Re-run reproduction** using the same method as Phase 4:
+   - **Playwright (preferred)**: Replay the same interaction sequence from Phase 4. Take a new screenshot for before/after visual comparison.
+   - **Manual fallback**: Ask the user to reproduce again and confirm the bug is gone.
 3. Compare before/after:
    ```
    Before: {"data":{"userId":null},"runId":"run1"}
@@ -331,6 +363,7 @@ Remove instrumentation only after:
 
 1. Search for `#region debug` and remove all debug code.
 2. **Revert any CSP changes** made in Phase 1 Step 3. If you added `http://localhost:8787` to a CSP `connect-src` directive, remove it now. Check the file and line you noted during setup.
+3. **Close the Playwright browser** if it was opened during this session: use `browser_close` to release browser resources.
 
 ## Log Format
 
@@ -486,8 +519,9 @@ window.addEventListener('message', (e) => {
 - [ ] 3-5 hypotheses generated
 - [ ] 3-8 logs added, tagged with hypothesisId
 - [ ] Logs cleared before reproduction
-- [ ] Reproduction steps provided
+- [ ] Reproduction executed (Playwright automated or manual fallback)
 - [ ] Each hypothesis evaluated (CONFIRMED/REJECTED/INCONCLUSIVE)
 - [ ] Fix based on evidence only
-- [ ] Before/after comparison done
+- [ ] Before/after comparison done (include screenshots if Playwright was used)
 - [ ] Instrumentation removed after confirmation
+- [ ] Playwright browser closed (if opened)

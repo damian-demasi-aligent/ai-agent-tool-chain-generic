@@ -71,11 +71,20 @@ For each issue found:
 - **File:line** — what's wrong and why it matters
 - Severity: **blocker** / **should fix** / **nit**
 
+### Visual diff (if applicable)
+
+Include this section when the reviewer agent performed a visual regression check (Playwright MCP was available and visual-output files were changed). Omit if no visual check was performed.
+
+- **Pages checked:** number and URLs
+- **Before/after comparison:** available (from feature-implementer baseline) or not available
+- Per-page findings: OK / regression found — with description and screenshot paths as evidence
+- Flag any unintended visual regressions as **should fix** issues
+
 ### Summary
 
 - **High-level assessment:** What the feature does, whether it's correct and well-implemented
 - **What's working well:** Good decisions or clean patterns worth calling out
-- **Issues or risks:** Problems, bugs, or design risks (be specific)
+- **Issues or risks:** Problems, bugs, or design risks (be specific) — include visual regressions here if found
 - **Recommended improvements:** Actionable suggestions, ordered by impact
 - **Verdict:** Whether the changes are safe to merge
 
