@@ -221,4 +221,4 @@ If corrections are needed, ask follow-up questions for the specific values, then
 After confirmation, report:
 - The saved config file path: `.claude/stack-config.json`
 - The detected capabilities
-- Next step: "Run `/setup-project` to generate CLAUDE.md and configure the toolchain for your project."
+- Next step: "Run `/setup-project` to generate CLAUDE.md, rules files, and configure the toolchain for your project."

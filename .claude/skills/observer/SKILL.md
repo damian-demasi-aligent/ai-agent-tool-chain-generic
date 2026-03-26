@@ -9,7 +9,7 @@ metadata:
 
 Create a Magento 2 Observer for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's vendor namespace, module inventory, PHP conventions, plugin naming convention (observers follow a similar prefix pattern), and PHP quality commands.
+Before starting, **read CLAUDE.md** for the project's vendor namespace, module inventory, and PHP quality commands. Also read the project rules (`.claude/rules/magento-conventions.md`) for PHP conventions and the plugin naming convention (observers follow a similar prefix pattern).
 
 ## Step 1: Understand the event
 
@@ -44,7 +44,7 @@ Search for existing observers in the project's custom modules (`Observer/` direc
 
 Key conventions:
 - Observers implement `ObserverInterface` with a single `execute(Observer $observer): void` method
-- Follow the PHP conventions from CLAUDE.md (copyright header, strict_types, promoted readonly properties)
+- Follow the PHP conventions from `.claude/rules/magento-conventions.md` (copyright header, strict_types, promoted readonly properties)
 - Namespace: `<Vendor>\<Module>\Observer\<ObserverName>`
 - Observer names in `events.xml` use `snake_case` descriptive names — check existing `events.xml` files for the naming prefix convention
 - Use early returns for guard clauses

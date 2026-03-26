@@ -8,7 +8,7 @@ metadata:
 
 # Magento 2 REST API Patterns
 
-This skill covers Magento's Web API framework for custom REST endpoints. Before starting, **read CLAUDE.md** for the project's vendor namespace, REST vs GraphQL boundary rules, and reference implementations for existing REST endpoints.
+This skill covers Magento's Web API framework for custom REST endpoints. Before starting, **read CLAUDE.md** for the project's vendor namespace, and the project rules (`.claude/rules/magento-conventions.md`) for REST vs GraphQL boundary rules and reference implementations for existing REST endpoints.
 
 ## File Structure
 
@@ -89,7 +89,7 @@ interface <Name>Interface
 - Always add `@api` docblock tag — marks this as a stable public API
 - Parameter and return types in docblocks must use fully-qualified class names when the framework needs to resolve them for serialisation
 - Use `@throws` to document exceptions the caller must handle
-- Check CLAUDE.md for the project's convention on methods per interface (typically one method per endpoint)
+- Check the project rules (`.claude/rules/magento-conventions.md`) for the project's convention on methods per interface (typically one method per endpoint)
 
 ## Data Interface (`Api/Data/`)
 
@@ -208,4 +208,4 @@ For anonymous endpoints, be careful about performance — results should be cach
 
 ## When to Use REST vs GraphQL
 
-**Check CLAUDE.md** for the project's boundary between REST and GraphQL. A common convention: REST is for external/B2B integrations and Magento service extensions, while GraphQL is for frontend widget data fetching. Read the project's existing REST implementations listed in CLAUDE.md before deciding which pattern to follow.
+**Check the project rules** (`.claude/rules/magento-conventions.md`) for the project's boundary between REST and GraphQL. A common convention: REST is for external/B2B integrations and Magento service extensions, while GraphQL is for frontend widget data fetching. Read the project's existing REST implementations listed in the Reuse Before Reimplementing table in `.claude/rules/` before deciding which pattern to follow.

@@ -32,6 +32,12 @@
     "react-lint-on-edit.sh": ["react"]
   },
   "$hooks-always-kept": ["core-vendor-guard.sh", "sync-manuals-check.sh", "config.sh"],
+  "rules": {
+    "react-conventions.md": ["react"],
+    "magento-conventions.md": ["magento"],
+    "theme-conventions.md": ["magento-theme"]
+  },
+  "$rules-always-kept": ["code-standards.md", "commit-conventions.md", "testing.md"],
   "capabilityDefinitions": {
     "magento": "Magento 2 backend in this repo",
     "magento-theme": "Luma/Blank/Hyvä theme with LESS and layout overrides",

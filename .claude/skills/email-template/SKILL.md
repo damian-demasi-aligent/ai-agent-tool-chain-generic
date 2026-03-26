@@ -9,23 +9,23 @@ metadata:
 
 Scaffold a Magento 2 transactional email for "$ARGUMENTS".
 
-Load the `email-patterns` skill for conventions before proceeding. Also **read CLAUDE.md** for the project's vendor namespace, PHP conventions, module inventory, Magento CLI commands, PHP quality commands, and the Reuse Before Reimplementing section (especially dual email and branch routing rules).
+Load the `email-patterns` skill for conventions before proceeding. Also **read CLAUDE.md** for the project's vendor namespace, module inventory, Magento CLI commands, and PHP quality commands. Read the project rules (`.claude/rules/`) for PHP conventions and the Reuse Before Reimplementing table (especially dual email and branch routing rules).
 
 ## Step 1: Parse the request
 
 Extract from $ARGUMENTS:
 - **What triggers the email** (e.g. "trial request submitted", "service enquiry", "order status change")
 - **Which module** owns this email (check CLAUDE.md module inventory)
-- **Recipients**: who gets the email — customer only, internal only, or both (check CLAUDE.md Reuse rules for the project's dual-email convention)
+- **Recipients**: who gets the email — customer only, internal only, or both (check the Reuse Before Reimplementing table in `.claude/rules/` for the project's dual-email convention)
 - **Fields**: what data the email should display — if not specified, ask the user
 
 If the description is ambiguous, ask the user to clarify before proceeding.
 
 ## Step 2: Study existing email implementations
 
-Read existing email implementations from CLAUDE.md's Reuse Before Reimplementing table — find the transactional email entries and read at least one full example (model + both templates + `email_templates.xml`) to match conventions.
+Read existing email implementations from the Reuse Before Reimplementing table in `.claude/rules/` — find the transactional email entries and read at least one full example (model + both templates + `email_templates.xml`) to match conventions.
 
-Key conventions from CLAUDE.md Reuse rules:
+Key conventions from the Reuse Before Reimplementing table in `.claude/rules/`:
 - Dual emails per form submission (customer confirmation + internal action-required)
 - Branch routing via `InventorySource` lookup
 - BCC from admin config
@@ -205,14 +205,14 @@ public function sendEmails(array $input): void
 
 ### Branch routing (getStoreDetails)
 
-Follow the existing `InventorySource` lookup pattern from the project (see CLAUDE.md Reuse rules). Read an existing enquiry model to get the exact implementation:
+Follow the existing `InventorySource` lookup pattern from the project (see Reuse Before Reimplementing table in `.claude/rules/`). Read an existing enquiry model to get the exact implementation:
 
 ```php
 private function getStoreDetails(string $storeCode): array
 {
     // Look up InventorySource by store_code
     // Fall back to general contact config
-    // Read BCC from admin config (see CLAUDE.md Reuse rules for the config path convention)
+    // Read BCC from admin config (see Reuse Before Reimplementing table in `.claude/rules/` for the config path convention)
     // Return array with branch_email, branch_name, bcc_emails, contact details
 }
 ```

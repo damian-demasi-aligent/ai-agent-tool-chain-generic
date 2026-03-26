@@ -9,7 +9,7 @@ metadata:
 
 Scaffold Magento 2 admin configuration (system.xml + supporting classes) for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's vendor namespace, admin config section convention, PHP conventions, PHP quality commands, and the Reuse Before Reimplementing table.
+Before starting, **read CLAUDE.md** for the project's vendor namespace, PHP quality commands, and admin config section convention. Also read the project rules (`.claude/rules/`) for PHP conventions and the Reuse Before Reimplementing table.
 
 ## Step 1: Parse the request
 
@@ -34,14 +34,14 @@ Read the existing `system.xml` and related files in the target module to underst
 - What `sortOrder` values are in use (pick the next logical value)
 - Whether a `config.xml` with defaults exists
 
-Also read existing admin config files from CLAUDE.md's Reuse Before Reimplementing table to match project conventions. Look for examples of:
+Also read existing admin config files from the Reuse Before Reimplementing table in `.claude/rules/` to match project conventions. Look for examples of:
 - Simple text/email fields
 - Dynamic rows (AbstractFieldArray)
 - Custom source models
 - ACL resources
 - Config defaults
 
-Follow the admin config section convention from CLAUDE.md Conventions — most config uses a shared section with module-specific groups.
+Follow the admin config section convention from the project rules (`.claude/rules/magento-conventions.md`) — most config uses a shared section with module-specific groups.
 
 ## Step 3: Determine what files to create/modify
 
@@ -90,7 +90,7 @@ Wait for the user to confirm before proceeding.
 
 ### system.xml
 
-If the file exists, add the new `<field>` entries inside the existing `<group>`. If the group doesn't exist, add a new `<group>` inside the existing shared `<section>`. Only create a new `<section>` if the module genuinely needs its own top-level admin section (this is rare — check CLAUDE.md Conventions for the shared section convention).
+If the file exists, add the new `<field>` entries inside the existing `<group>`. If the group doesn't exist, add a new `<group>` inside the existing shared `<section>`. Only create a new `<section>` if the module genuinely needs its own top-level admin section (this is rare — check the project rules in `.claude/rules/magento-conventions.md` for the shared section convention).
 
 Field template:
 ```xml
@@ -130,7 +130,7 @@ Template for defaults (use the shared section path from CLAUDE.md):
 Read an existing dynamic rows block in the project for the exact pattern, then follow it:
 ```php
 <?php
-// [project copyright header — see CLAUDE.md PHP Conventions]
+// [project copyright header — see `.claude/rules/magento-conventions.md`]
 declare(strict_types=1);
 
 namespace <Vendor>\<Module>\Block\Adminhtml\Form\Field;
@@ -158,7 +158,7 @@ class <Name> extends AbstractFieldArray
 Read an existing source model in the project for the exact pattern, then follow it:
 ```php
 <?php
-// [project copyright header — see CLAUDE.md PHP Conventions]
+// [project copyright header — see `.claude/rules/magento-conventions.md`]
 declare(strict_types=1);
 
 namespace <Vendor>\<Module>\Model\Config\Source;

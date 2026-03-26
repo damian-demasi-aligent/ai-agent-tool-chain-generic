@@ -10,7 +10,7 @@ metadata:
 
 Magento templates use LESS for styling. If the project also uses a JS framework (React, Vue, etc.) with its own styling system (Tailwind, CSS Modules, etc.), those are a separate concern. Do not mix LESS theme styles with JS component styles.
 
-Before starting, **read CLAUDE.md** for the project's theme path, parent theme, colour variables, custom mixins, and file organisation conventions.
+Before starting, **read CLAUDE.md** for the project's theme path and parent theme. Also read the project rules (`.claude/rules/`) for colour variables, custom mixins, and file organisation conventions.
 
 ## File Organisation
 
@@ -30,7 +30,7 @@ Module-specific overrides use `_extend.less` or `_module.less` in the module's `
 
 ## Theme Variables
 
-**Always use the project's theme colour variables** — do not hardcode hex values. Check CLAUDE.md for the variable naming convention and prefix (e.g. `@theme__color__primary`). If unsure, search the theme's LESS files for `@.*color` definitions.
+**Always use the project's theme colour variables** — do not hardcode hex values. Check the project rules (`.claude/rules/`) for the variable naming convention and prefix (e.g. `@theme__color__primary`). If unsure, search the theme's LESS files for `@.*color` definitions.
 
 ## Breakpoints
 
@@ -45,11 +45,11 @@ The project may define additional custom breakpoints — check the theme's varia
 
 ## Mixins
 
-Check CLAUDE.md for project-specific mixins (page titles, modals, buttons, icon injection, etc.). Before writing new styles, search the theme's mixin files to see if a reusable mixin already exists.
+Check the project rules (`.claude/rules/`) for project-specific mixins (page titles, modals, buttons, icon injection, etc.). Before writing new styles, search the theme's mixin files to see if a reusable mixin already exists.
 
 ## Rules
 
 - New module-level styles go in `<ModuleName>/web/css/source/_extend.less` under the theme directory
 - General theme styles go in the matching file in `web/css/source/`
-- Responsive styles go in the appropriate `_media-query-*.less` file, NOT inline in component LESS — check CLAUDE.md for the project's responsive file convention
+- Responsive styles go in the appropriate `_media-query-*.less` file, NOT inline in component LESS — check the project rules (`.claude/rules/`) for the project's responsive file convention
 - Read existing LESS files in the theme before writing new styles to match naming patterns and structure

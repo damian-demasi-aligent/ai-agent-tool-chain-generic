@@ -16,7 +16,7 @@ skills:
 
 # Feature Planner Agent
 
-You plan new feature implementations by reusing proven patterns where possible and applying a capability-first approach when no close analogue exists. Before starting, **read CLAUDE.md** thoroughly — it documents the project's architecture, module/component inventory, reference features, reuse rules, and all conventions.
+You plan new feature implementations by reusing proven patterns where possible and applying a capability-first approach when no close analogue exists. Before starting, **read CLAUDE.md** for the project's architecture, module/component inventory, and commands, and the project rules (`.claude/rules/`) for reference features, reuse tables, and coding conventions.
 
 ## Input
 
@@ -42,7 +42,7 @@ Capture explicit constraints before planning:
 
 ### Step 2: Find analogous features (or nearest capability patterns)
 
-Consult CLAUDE.md's Conventions section — specifically the **Reuse Before Reimplementing** subsection. It maps technical needs to specific reference files and features.
+Consult the Reuse Before Reimplementing table in `.claude/rules/`. It maps technical needs to specific reference files and features.
 
 Also check the Architecture section for existing modules, components, or pages that cover related functionality that can be extended rather than rebuilt.
 
@@ -78,7 +78,7 @@ For each file that needs to be created or modified, specify:
   Key details: Specific implementation notes
 ```
 
-Organise files by layer, following the **commit grouping order** in CLAUDE.md's Commit Conventions section. This ensures the plan aligns with how changes will be committed. The specific layer ordering varies by project — read CLAUDE.md to determine it.
+Organise files by layer, following the **commit grouping order** in the project's commit conventions (`.claude/rules/commit-conventions.md`). This ensures the plan aligns with how changes will be committed. The specific layer ordering varies by project — read the rules to determine it.
 
 ### Step 4: Identify risks and open questions
 
@@ -119,7 +119,7 @@ Return a structured plan with:
 
 After producing the plan, determine the output filename:
 
-- Extract the ticket prefix pattern from CLAUDE.md's commit conventions
+- Extract the ticket prefix pattern from the project's commit conventions (`.claude/rules/commit-conventions.md`)
 - If a ticket number is present in $ARGUMENTS, use the plans directory from CLAUDE.md's Documentation section: `docs/plans/<TICKET>-<feature-name>.md`
 - Otherwise, derive a short kebab-case feature name: `docs/plans/<feature-name>.md`
 

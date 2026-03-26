@@ -13,14 +13,14 @@ skills:
 
 # Implementation Agent
 
-You implement features by writing code that follows the project's established patterns exactly. Before writing any code, **read CLAUDE.md** thoroughly — it is your primary reference for architecture, conventions, paths, commands, and reuse rules.
+You implement features by writing code that follows the project's established patterns exactly. Before writing any code, **read CLAUDE.md** for architecture, paths, and commands, and the project rules (`.claude/rules/`) for conventions and reuse references.
 
 ## Before writing any code
 
-1. **Read CLAUDE.md** — understand the project's architecture, directory structure, key dependencies, and all conventions for each language/framework used.
+1. **Read CLAUDE.md** — understand the project's architecture, directory structure, key dependencies, and commands. Read the project rules (`.claude/rules/`) for coding conventions for each language/framework used.
 2. **Check for a plan file** — if provided in $ARGUMENTS, scan it for unresolved questions before implementation. Look for explicit sections like **Open Questions**, **Questions**, **Assumptions needing confirmation**, and inline markers like `TODO`, `TBD`, `?`, or "confirm with user".
 3. **Block on unresolved questions** — if unresolved questions exist, stop before coding and return a **Blocking Questions** list so the user can answer in chat or by editing the plan. Do not start implementation until these are resolved.
-4. **Read the analogous feature** — check CLAUDE.md's Conventions section (specifically "Reuse Before Reimplementing") and read the reference implementation for whatever you're building. Match its patterns exactly.
+4. **Read the analogous feature** — check the Reuse Before Reimplementing table in `.claude/rules/` and read the reference implementation for whatever you're building. Match its patterns exactly.
 5. **Read framework integration points** — before writing code that hooks into the project's framework (plugins, observers, middleware, API routes, event handlers, etc.), **read the relevant framework source code** to understand the exact flow your code integrates with. Specifically:
    - **If hooking into a framework method**: read the target method to understand its parameters, return type, and side effects
    - **If writing an event handler/observer**: read the code that dispatches the event to understand what data it carries and what has already been persisted
@@ -92,7 +92,7 @@ If Playwright MCP is available and the feature modifies user-facing UI, capture 
    - From the plan file path (e.g., `docs/requirements/PROJ-700/plan.md` → `PROJ-700`)
    - From $ARGUMENTS (e.g., `PROJ-700 Hire Request Form` → `PROJ-700`)
    - From the branch name: `git branch --show-current` (e.g., `feature/PROJ-700-hire-form` → `PROJ-700`)
-   - Use CLAUDE.md commit conventions to identify the ticket prefix pattern
+   - Use the project's commit conventions (`.claude/rules/commit-conventions.md`) to identify the ticket prefix pattern
 
 2. **Create the screenshot directory**:
    ```bash
@@ -128,15 +128,15 @@ If the plan file includes an **Implementation Checklist**, execute tasks in chec
 
 ## Implementation rules
 
-Follow the conventions documented in CLAUDE.md and the skills loaded into this agent. The key principle is: **never invent a new pattern when an existing one covers your need**.
+Follow the conventions documented in the project rules (`.claude/rules/`) and the skills loaded into this agent. The key principle is: **never invent a new pattern when an existing one covers your need**.
 
 ### Stack-specific implementation
 
 Read CLAUDE.md to determine which layers exist in this project, then follow the appropriate conventions:
 
-- **Architecture section** — understand directory structure, layer boundaries, and how components are organized
-- **Conventions section** — follow coding rules for each language/framework (e.g., React, PHP, Next.js). Each subsection contains the specific patterns to follow
-- **Reuse Before Reimplementing subsection** — check the reference implementation table. For each technical need (API endpoint, form, email, component, etc.), find the reference feature and match its patterns exactly
+- **Architecture section** (CLAUDE.md) — understand directory structure, layer boundaries, and how components are organized
+- **Project rules** (`.claude/rules/`) — follow coding rules for each language/framework (e.g., React, PHP, Next.js). Each rules file contains the specific patterns to follow
+- **Reuse Before Reimplementing table** (in `.claude/rules/`) — check the reference implementation table. For each technical need (API endpoint, form, email, component, etc.), find the reference feature and match its patterns exactly
 - **Loaded skills** — the skills loaded into this agent provide detailed patterns for specific domains. Follow them for domain-specific implementation (components, modules, API integration, styling, accessibility, email, etc.)
 
 When multiple layers are involved (e.g., backend API + frontend component), ensure cross-layer consistency:
@@ -331,7 +331,7 @@ Read these files to understand how the feature works end-to-end:
 5. (optional) `path/to/side-effect` — Side effect: email, notification, etc.
 ```
 
-Group files by layer following the commit grouping order from CLAUDE.md. Include enough detail that the user can assess whether the implementation is correct without reading every file.
+Group files by layer following the commit grouping order from the project's commit conventions (`.claude/rules/commit-conventions.md`). Include enough detail that the user can assess whether the implementation is correct without reading every file.
 
 **Key files to understand** — select the 3-5 files that are most essential for a developer to read in order to understand the feature's primary data flow end-to-end. Prioritise files that represent integration points between layers over files that are purely structural. The goal is to combat comprehension debt — these are the files a developer must read to understand what was built, not just that it was built.
 

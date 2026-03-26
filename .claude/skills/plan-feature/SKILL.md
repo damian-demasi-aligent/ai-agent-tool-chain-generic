@@ -23,12 +23,12 @@ Run these commands in parallel to establish context:
 
 1. **Read the requirements.** If $ARGUMENTS is a file path (e.g. `docs/requirements/ABC-123/description.md`), read it. If it's a ticket number, look for a matching directory or file in `docs/requirements/`. If it's a description, use it directly.
 
-2. **Read CLAUDE.md** — specifically the **Conventions → Reuse Before Reimplementing** subsection and the **Architecture** section. Identify:
+2. **Read CLAUDE.md** (Architecture section) and the **project rules** (`.claude/rules/`) — specifically the **Reuse Before Reimplementing** table. Identify:
    - Which reference features are the closest analogues
    - Which existing modules/components might be extended vs. new ones needed
    - Which shared files will likely need modification (API providers, types, configuration)
 
-3. **Determine the technical needs** of the feature: does it need an API endpoint/mutation? Transactional emails? Admin config? A frontend form? A new component/page? Map each need to the reference feature from the Reuse table in CLAUDE.md.
+3. **Determine the technical needs** of the feature: does it need an API endpoint/mutation? Transactional emails? Admin config? A frontend form? A new component/page? Map each need to the reference feature from the Reuse Before Reimplementing table in `.claude/rules/`.
 
 ## Phase 2: Research via codebase-qa agents
 

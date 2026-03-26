@@ -9,7 +9,7 @@ metadata:
 
 Create a Magento 2 Plugin (Interceptor) for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's vendor namespace, plugin naming convention, and PHP conventions.
+Before starting, **read CLAUDE.md** for the project's vendor namespace. Also read the project rules (`.claude/rules/magento-conventions.md`) for the plugin naming convention and PHP conventions.
 
 ## Step 1: Understand the target
 
@@ -32,14 +32,14 @@ Read examples from the project:
    - For `before` plugins: return an array of the original method's arguments
    - For `after` plugins: receive and return the `$result`
    - For `around` plugins: receive a `callable $proceed` and call it
-   - Follow the PHP conventions from CLAUDE.md (copyright header, strict_types, promoted properties)
+   - Follow the PHP conventions from `.claude/rules/magento-conventions.md` (copyright header, strict_types, promoted properties)
 3. Register in the module's `etc/di.xml` (or `etc/frontend/di.xml` for frontend-only):
    ```xml
    <type name="Target\Class\Name">
        <plugin name="<prefix>_descriptive_name" type="<Vendor>\<Module>\Plugin\PluginClass" sortOrder="10"/>
    </type>
    ```
-   Use the plugin naming convention from CLAUDE.md.
+   Use the plugin naming convention from `.claude/rules/magento-conventions.md`.
 
 ## Step 4: Verify
 

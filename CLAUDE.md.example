@@ -1,6 +1,6 @@
 # CLAUDE.md — Example (Magento 2 + React/Vite)
 
-> **This is an example CLAUDE.md** from a Magento 2 Enterprise Edition + React/Vite project. It demonstrates the structure and sections that the `.claude/` toolchain expects. When you run `/setup-project`, a project-specific CLAUDE.md will be generated to replace this file.
+> **This is an example CLAUDE.md** from a Magento 2 Enterprise Edition + React/Vite project. It demonstrates the slim structure that the `.claude/` toolchain expects. Convention-specific rules (code standards, commit format, testing, language conventions) live in `.claude/rules/` — see the `.md.example` files there. When you run `/setup-project`, a project-specific CLAUDE.md and rules files will be generated to replace these examples.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -97,13 +97,6 @@ app/design/frontend/CCG/ccg/
 
 Theme inherits from Luma. Prefer `referenceBlock`/`referenceContainer` in layout XML over copy-pasting.
 
-**LESS styling:** Theme-level styles use LESS (not Tailwind — Tailwind is only for React components). Key conventions:
-
-- Theme colour variables are prefixed `@ccg-theme__color__*` (primary, secondary, tertiary, black, white, info-blue, and variants) — always use these instead of hardcoding hex values
-- Custom mixins live in `web/css/source/lib/_ccg-mixins.less` (page titles, modals) and `web/css/source/_mixins.less` (buttons, dropdowns, Font Awesome icons)
-- Responsive styles go in dedicated `_media-query-*.less` files (mobile, desktop-medium, desktop-large), not inline in component LESS
-- Module-specific overrides use `_extend.less` in the module's directory under the theme (e.g. `Magento_Catalog/web/css/source/_extend.less`)
-
 ### Custom Magento Modules
 
 All under `app/code/CountryCareGroup/`:
@@ -169,123 +162,3 @@ docs/
 - **Starting a new feature** → check `docs/plans/` for an existing plan before asking `feature-planner` to re-plan
 - **Unsure which tool to use** → read `docs/manuals/reference/ai-tools-reference.md`
 - **New to the repo** → start with `docs/manuals/getting-started/onboarding.md`
-
-## Testing
-
-No testing framework is currently installed. When bootstrapping tests, use Vitest (aligns with the existing Vite toolchain) with `@testing-library/react` and `jsdom`. Co-locate test files next to source (`MyComponent.test.tsx` alongside `MyComponent.tsx`).
-
-Key testing priorities by layer:
-
-- **Hooks** — mock DOM APIs (MutationObserver, elements), test cleanup on unmount, test null/missing element cases
-- **Provider methods** — mock Apollo Client, test both success and error paths of the `ActionResult<T>` return type
-- **Form components** — test Zod validation (valid/invalid), multi-step navigation, error display
-- **Widget entry points** — mock `document.querySelectorAll`, verify `createRoot` is called for each matched element, test data attribute reading
-
-## Code Standards
-
-- **ESLint:** `@aligent/ts-code-standards` with React config; `@typescript-eslint/consistent-type-assertions: never`
-- **Prettier:** Tailwind-aware; sorts classes in `classNames` and `clsx` calls
-- **EditorConfig:** 4-space indent for TS/PHP/PHTML, 2-space for YAML/JSON/MD, LF line endings, 100-char max line length
-- **PHP:** PHPCS Magento2 standard; PHPStan level 0
-
-## Commit Conventions
-
-- **Main branch:** `production`
-
-### Message format
-
-```
-CCG-XXX: <Verb> <what changed>
-```
-
-- **Ticket prefix** — extracted from the branch name (e.g. `feature/CCG-633-trial-form` → `CCG-633`)
-- **Imperative mood** — "Add", "Update", "Fix", "Remove", "Wire" — not "Added" or "Adding"
-- **Subject ≤ 72 characters**; add a body after a blank line if needed
-- **Capital letter** after the colon, **no trailing period**
-- Always append the `Co-Authored-By` trailer
-
-### Commit grouping order
-
-When committing a multi-layer feature, group files into cohesive commits in this order so each builds on the previous:
-
-| Priority | Group                          | Typical files                                                                              |
-| -------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
-| 1        | PHP module registration        | `registration.php`, `composer.json`, `etc/module.xml`                                      |
-| 2        | Admin configuration            | `etc/adminhtml/system.xml`, `etc/config.xml`, `Block/Adminhtml/`                           |
-| 3        | GraphQL schema + backend logic | `etc/schema.graphqls`, `Api/`, `Model/`, `etc/di.xml`, `etc/email_templates.xml`           |
-| 4        | Email templates                | `view/frontend/email/`                                                                     |
-| 5        | Magento frontend integration   | layout XML, `.phtml`, `.js`, `.less`, `requirejs-config.js` in PHP modules                 |
-| 6        | React data layer               | `AdobeProvider/GQL/`, `AdobeProvider/providers/`, `CCGProvider.ts`, `types/ccgProvider.ts` |
-| 7        | React components + widget      | `components/`, `widgets/`, `.phtml` under the React module                                 |
-
-**Rules:**
-
-- Never commit build artifacts under `React/view/frontend/web/js/` or `web/css/` — generated by `yarn build`
-- Never mix PHP source with React source in the same commit
-- Keep together files that only make sense as a unit (e.g. a resolver + its schema type)
-- Merge very small groups (1-2 files) with an adjacent group
-- Unrelated fixes unconnected to the main feature get their own commits
-
-## Conventions
-
-### General Code
-
-- **Always read existing code before writing new code.** This codebase has established patterns for every recurring concern. Reimplementing them from scratch introduces inconsistency and bugs.
-
-### React
-
-- React widgets must live in the `React` module — do not add React code to other modules
-- Functional components only (no class components), one `.tsx` file per component
-- Props/state interfaces are defined inline in the component file, not in separate type files
-- Use barrel `index.ts` exports for component directories
-- GraphQL operations use Apollo Client directly — no codegen. New providers must be wired into `CCGProvider.ts`
-- Use early returns; name event handlers with `handle*` prefix
-- Avoid `setTimeout`/`setInterval` without a strong reason
-- Provider methods never throw — they return `ActionResult<T>`, a discriminated union (`{ status: 'success'; payload: T } | { status: 'error'; message: string }`). Consume with status checks, not try/catch.
-- Error message constants live in `constants/` as objects with `type` (`'warning'` | `'error'`) and `message` fields
-- Use `aria-live` regions for dynamic content (cart, filters, notifications)
-- Track focus intent with boolean state flags (e.g. `shouldFocusInput`) and reset them when drawers/modals close — do not call `.focus()` imperatively
-- Use the `ERROR_TYPE_STYLES` constant for consistent error component styling across all React widgets
-
-### PHP / Magento
-
-- Aligent copyright header on all PHP files: `/** Aligent * Copyright (c) <YEAR> Aligent. (https://www.aligent.com.au) */`
-- `declare(strict_types=1)` on all PHP files
-- Constructor uses PHP 8.1 promoted `private readonly` properties
-- Admin config section: all custom config lives under a shared `country_care_group` section (defined in Catalog module) with module-specific groups. Only create a new section if genuinely needed — almost all config goes into the shared one.
-- Pre-commit hooks (PHPCS + PHPStan) run via `manta` wrapper — if hooks fail in your environment, check the `manta` command availability
-- For Magento template overrides, always verify the correct module path (e.g., Magento_CustomerCustomAttributes vs Magento_Customer)
-- When debugging frontend issues where code changes don't take effect, check for stale compiled/bundled assets early in the debugging process
-
-### Tooling
-
-- Claude `PostToolUse` hook auto-runs `yarn eslint --fix` and `yarn eslint` for edited React source files under `app/code/CountryCareGroup/React/view/frontend/src/app/`
-- Use `@preflight` before commit for React changes — it runs lint, type-check, build, and a focused a11y audit on changed components
-- When creating agent/skill files, keep them project-agnostic. Project-specific context belongs in CLAUDE.md, not in reusable agent definitions
-
-**Full-stack reference features:** `Hire` and `Service` are the most complete examples — each covers module registration, admin config, GraphQL schema + resolver, email sending, React multi-step form, widget entry point, and Magento layout wiring. Use them as the primary analogue for any new form-to-backend feature. For product-page widgets with complex state and DOM bridging, study `StockAvailability` (stock-availability-widget).
-
-Before implementing any feature, search for existing examples by technical need:
-
-| Need                        | Where to look first                                                                |
-| --------------------------- | ---------------------------------------------------------------------------------- |
-| Transactional email         | `Service/Model/ServiceEnquiry.php`, `Hire/Model/HireEnquiry.php`                   |
-| GraphQL mutation + resolver | `Hire/Model/Resolver/HireEnquiry.php`, `Service/Model/Resolver/ServiceEnquiry.php` |
-| Admin config fields         | `Hire/etc/adminhtml/system.xml`, `Service/etc/adminhtml/system.xml`                |
-| Multi-step React form       | `components/HireForm/`, `components/ServiceForm/`                                  |
-| React widget entry point    | `widgets/hire-widget.tsx`, `widgets/service-widget.tsx`                            |
-| Magento plugin              | `Plugin/` directories under any `CountryCareGroup/` module                         |
-| Data patch / EAV attribute  | `Catalog/Setup/Patch/Data/`, `Customer/Setup/Patch/Data/`                          |
-| DB schema column            | `ShippingRateProvider/etc/db_schema.xml`, `StoreLocation/etc/db_schema.xml`        |
-
-Specific rules:
-
-- **Dual emails per form submission:** Each enquiry sends two emails — a customer confirmation and an internal `[ACTION REQUIRED]` email to the relevant branch. Follow this pattern for any new form-to-email feature.
-- **Branch email routing:** Always use the `InventorySource` lookup pattern from `ServiceEnquiry`/`HireEnquiry`. Do not hardcode email addresses or invent a new routing mechanism.
-- **BCC lists:** Always read from `country_care_group/<module>/bcc_to` admin config and split on comma. Do not add a new config path unless the module is genuinely new.
-- **Enquiry code generation:** Match the existing `bin2hex(random_bytes(3))` pattern. Do not use `uniqid()`, UUIDs, or timestamps. Each module has its own prefix (e.g. `ENQHIR`, `ENQSER`, `TRL-`) — check the existing model when adding a new enquiry type.
-- **Template variables:** Always pass a single `['data' => $input]` array to `setTemplateVars()`. Do not create top-level template variables outside the `data` key.
-- **React data attributes:** Always use `$escaper->escapeHtmlAttr()` for PHTML data attributes. Do not use `escapeHtml()` or raw output.
-- **GraphQL types:** After any schema change, check `types/ccgProvider.ts` and the GQL template literal for the same operation — all three must stay in sync.
-- **REST vs GraphQL boundary:** REST endpoints are for B2B/external integrations (Punchout, server-to-server) and Magento service extensions. React widgets always use GraphQL — do not add REST endpoints for frontend data needs.
-- **REST conventions:** One method per endpoint interface. Reference implementations: `Punchout` module (authenticated POST with request body, `self` + `%cart_id%`) and `StoreLocation` module (anonymous GET with query parameters).

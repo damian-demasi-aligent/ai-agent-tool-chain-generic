@@ -10,11 +10,11 @@ metadata:
 
 Target: $ARGUMENTS (a component name, hook, provider method, or "setup" to bootstrap test infrastructure).
 
-Before starting, **read CLAUDE.md** for the project's current testing status, testing priorities by layer, and any existing test conventions.
+Before starting, **read CLAUDE.md** for the project's Architecture section, and the project rules (`.claude/rules/testing.md`) for the current testing status, testing priorities by layer, and any existing test conventions.
 
 ## If $ARGUMENTS is "setup"
 
-Check CLAUDE.md to confirm whether a testing framework is already installed. If not, bootstrap it:
+Check the testing rules (`.claude/rules/testing.md`) to confirm whether a testing framework is already installed. If not, bootstrap it:
 
 1. Install Vitest and Testing Library (aligns with Vite toolchain):
 
@@ -80,4 +80,4 @@ Read the target's source code first, then write tests following the testing prio
 - Co-locate test files next to source: `MyComponent.test.tsx` alongside `MyComponent.tsx`
 - Use `describe` blocks matching component/hook name
 - Use `@testing-library/user-event` over `fireEvent` for interactions
-- Check CLAUDE.md for any additional test conventions specific to this project
+- Check the project rules (`.claude/rules/testing.md`) for any additional test conventions specific to this project

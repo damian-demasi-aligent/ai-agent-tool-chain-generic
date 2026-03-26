@@ -9,7 +9,7 @@ metadata:
 
 Scaffold a GraphQL operation for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's vendor namespace, module paths, frontend Architecture (GQL directory, providers, types file, main provider entry point), and conventions.
+Before starting, **read CLAUDE.md** for the project's vendor namespace, module paths, and frontend Architecture (GQL directory, providers, types file, main provider entry point). Also read the project rules (`.claude/rules/`) for coding conventions.
 
 ## Step 1: Determine scope
 
@@ -38,7 +38,7 @@ Using the paths from CLAUDE.md Architecture section:
 1. Study the existing patterns in the GQL directory — these use `gql` tagged template literals from the project's GraphQL client. Read an existing operation for reference.
 2. Create the query/mutation file in the GQL directory following those patterns.
 3. Add a typed provider method in the matching providers file (or create a new provider if this is a new domain).
-4. Add TypeScript types to the shared types file matching the GraphQL input/output shape. Follow the project's API return type convention from CLAUDE.md Conventions.
+4. Add TypeScript types to the shared types file matching the GraphQL input/output shape. Follow the project's API return type convention from the project rules (`.claude/rules/react-conventions.md`).
 5. Export from the GQL barrel index if needed.
 6. Wire the provider into the main provider entry point if it's a new provider.
 

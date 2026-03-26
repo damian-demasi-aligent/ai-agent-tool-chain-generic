@@ -9,7 +9,7 @@ metadata:
 
 Create a Magento 2 data patch or schema change for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's vendor namespace, module inventory, PHP conventions, Magento CLI commands, PHP quality commands, and the Reuse Before Reimplementing table (especially data patch and DB schema entries).
+Before starting, **read CLAUDE.md** for the project's vendor namespace, module inventory, Magento CLI commands, and PHP quality commands. Also read the project rules (`.claude/rules/`) for PHP conventions and the Reuse Before Reimplementing table (especially data patch and DB schema entries).
 
 ## Step 1: Determine the patch type
 
@@ -29,7 +29,7 @@ If the description is ambiguous, ask the user to clarify before proceeding.
 
 ## Step 2: Study existing examples in this project
 
-Read the relevant reference files from CLAUDE.md's Reuse Before Reimplementing table to match project conventions:
+Read the relevant reference files from the Reuse Before Reimplementing table in `.claude/rules/` to match project conventions:
 
 ### For declarative schema (`db_schema.xml`)
 
@@ -40,7 +40,7 @@ Search for existing `db_schema.xml` files in the project's custom modules. Look 
 
 ### For data patches (EAV attributes)
 
-Read existing patches from the paths listed in CLAUDE.md's reuse table. Look for patterns matching:
+Read existing patches from the paths listed in the Reuse Before Reimplementing table in `.claude/rules/`. Look for patterns matching:
 - Product boolean attribute
 - Product attribute with dependencies
 - Modify existing attribute properties
@@ -53,7 +53,7 @@ Key conventions to observe in existing patches:
 - `getAliases()` returns `[]` and `getDependencies()` returns `[]` (unless there is an explicit ordering need)
 - Data patches implement `DataPatchInterface`; add `PatchRevertableInterface` only when a `revert()` method is provided
 - Class name describes the action: `Add<Thing>`, `Update<Thing>`, `Remove<Thing>`
-- Follow the PHP conventions from CLAUDE.md (copyright header, strict_types, promoted properties)
+- Follow the PHP conventions from `.claude/rules/magento-conventions.md` (copyright header, strict_types, promoted properties)
 
 ## Step 3: Determine the target module
 
@@ -173,7 +173,7 @@ Read an existing product attribute patch in the project, then follow the same st
 
 ```php
 <?php
-// [project copyright header — see CLAUDE.md PHP Conventions]
+// [project copyright header — see `.claude/rules/magento-conventions.md`]
 declare(strict_types=1);
 
 namespace <Vendor>\<Module>\Setup\Patch\Data;

@@ -10,7 +10,7 @@ skills:
 
 # Test Runner Agent
 
-Run the test suite and report results concisely. Before starting, **read CLAUDE.md** to check the project's testing status, test commands, and main branch name.
+Run the test suite and report results concisely. Before starting, **read CLAUDE.md** for the project's test commands and main branch name, and check the testing rules (`.claude/rules/testing.md`) for testing status and conventions.
 
 ## Step 1: Verify test infrastructure exists
 

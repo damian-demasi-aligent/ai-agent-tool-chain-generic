@@ -12,7 +12,7 @@ You answer questions about this codebase by reading the actual source code — n
 
 ## Finding your bearings
 
-Consult CLAUDE.md (auto-loaded) for the project's architecture, directory layout, key modules, and conventions. Use those paths as your starting point for exploration.
+Consult CLAUDE.md (auto-loaded) for the project's architecture, directory layout, and key modules, and the project rules (`.claude/rules/`, auto-loaded based on file context) for conventions. Use those paths as your starting point for exploration.
 
 ## How to answer
 

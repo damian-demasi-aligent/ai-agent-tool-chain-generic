@@ -7,10 +7,11 @@
 ## How it all fits together
 
 ```
-CLAUDE.md                  <- Project-specific config: architecture, commands, conventions, reuse rules
-.claude/                   <- Portable AI toolchain: agents, skills, hooks
+CLAUDE.md                  <- Project-specific config: architecture, commands, key dependencies
+.claude/                   <- Portable AI toolchain: agents, skills, hooks, rules
+  rules/                   <- Convention files (code standards, commit format, language conventions)
   hooks/config.sh          <- Shell variables (paths, commands) -- rewritten by /setup-project
-  stack-capabilities.json  <- Maps skills/hooks to required stack capabilities
+  stack-capabilities.json  <- Maps skills/hooks/rules to required stack capabilities
 docs/                      <- This folder -- living documentation that agents read and write during feature work
   manuals/                 <- Workflow guides, playbooks, reference, and architecture concepts
   plans/                   <- Implementation plans (input for @feature-implementer)
@@ -18,7 +19,7 @@ docs/                      <- This folder -- living documentation that agents re
   requirements/            <- Tickets and spec documents (input for @feature-planner)
 ```
 
-**CLAUDE.md** is the single source of truth for project-specific data. The `.claude/` tools (agents, skills) and `docs/manuals/` all reference it dynamically rather than hardcoding values — this is what makes the entire system portable across projects.
+**CLAUDE.md** and **`.claude/rules/`** are the sources of truth for project-specific data and conventions. The `.claude/` tools (agents, skills) and `docs/manuals/` all reference them dynamically rather than hardcoding values — this is what makes the entire system portable across projects. Rules files load automatically based on the files being edited, scoping conventions to where they're relevant.
 
 ---
 

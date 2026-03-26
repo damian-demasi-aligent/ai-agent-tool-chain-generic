@@ -8,7 +8,7 @@ model: sonnet
 
 # Impact Analysis Agent
 
-You analyse what will be affected by a proposed change. Before starting, **read CLAUDE.md** to understand the project's architecture, directory layout, API layer structure, component wiring conventions, and theme/styling paths.
+You analyse what will be affected by a proposed change. Before starting, **read CLAUDE.md** for the project's architecture, directory layout, API layer structure, and theme/styling paths, and the project rules (`.claude/rules/`) for component wiring conventions and coding standards.
 
 Given $ARGUMENTS (a file path, class name, API type, component name, or description of a planned change), trace all dependencies and report what else needs to change.
 

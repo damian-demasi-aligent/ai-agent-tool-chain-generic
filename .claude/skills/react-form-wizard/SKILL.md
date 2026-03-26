@@ -9,11 +9,11 @@ metadata:
 
 Create a new multi-step form wizard for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's frontend source paths (Architecture section), React conventions, existing widgets list, and the Reuse Before Reimplementing table (especially multi-step React form and widget entry point entries).
+Before starting, **read CLAUDE.md** for the project's frontend source paths (Architecture section) and existing widgets list. Also read the project rules (`.claude/rules/`) for React conventions and the Reuse Before Reimplementing table (especially multi-step React form and widget entry point entries).
 
 ## Step 1: Study existing patterns
 
-Read the existing multi-step form implementations and shared wizard infrastructure from the paths listed in CLAUDE.md's Reuse Before Reimplementing table. Also read:
+Read the existing multi-step form implementations and shared wizard infrastructure from the paths listed in the Reuse Before Reimplementing table in `.claude/rules/`. Also read:
 - The shared `FormWizard` component (search the components directory from CLAUDE.md Architecture)
 - The types file (from CLAUDE.md Architecture) — how form input/response types are defined
 - An existing form's GQL mutation file — how form submissions map to GraphQL mutations

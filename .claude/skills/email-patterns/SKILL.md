@@ -8,7 +8,7 @@ metadata:
 
 # Magento 2 Email Patterns
 
-Follow these conventions when creating or modifying transactional email functionality. Before starting, **read CLAUDE.md** for project-specific email conventions (routing, BCC handling, template variable format, enquiry codes, etc.) and check the reference implementations listed there.
+Follow these conventions when creating or modifying transactional email functionality. Before starting, **read the project rules** (`.claude/rules/`) for project-specific email conventions (routing, BCC handling, template variable format, enquiry codes, etc.) and check the reference implementations listed in the Reuse Before Reimplementing table.
 
 ## Architecture Overview
 
@@ -20,7 +20,7 @@ GraphQL Resolver → Model (implements Interface) → TransportBuilder → HTML 
                                          ScopeConfig (config-driven routing, BCC)
 ```
 
-Check CLAUDE.md for how many emails each form submission sends (e.g. customer confirmation + internal notification) and any project-specific routing patterns.
+Check the project rules (`.claude/rules/`) for how many emails each form submission sends (e.g. customer confirmation + internal notification) and any project-specific routing patterns.
 
 ## File Structure
 
@@ -100,7 +100,7 @@ Body text here.
 1. **Only scalar values render correctly.** Arrays and objects render as raw JSON. Deserialise structured data in PHP and either format as HTML or create separate template variables.
 2. **The `@vars` comment block** is required — it tells Magento's admin template editor which variables are available. List every variable the template uses.
 3. **The `@subject` comment** defines the email subject line. Use `{{trans}}` for translatability.
-4. **Check CLAUDE.md** for any subject line prefix conventions (e.g. `[ACTION REQUIRED]` for internal emails).
+4. **Check the project rules** (`.claude/rules/`) for any subject line prefix conventions (e.g. `[ACTION REQUIRED]` for internal emails).
 
 ## TransportBuilder Pattern
 
@@ -124,17 +124,17 @@ private function sendEmail(array $input, string $templateId, string $toEmail): v
 }
 ```
 
-**Important:** Check CLAUDE.md for the project's template variable convention. Many projects pass a single `['data' => $input]` array rather than individual top-level variables.
+**Important:** Check the project rules (`.claude/rules/`) for the project's template variable convention. Many projects pass a single `['data' => $input]` array rather than individual top-level variables.
 
 ### Email routing
 
-Check CLAUDE.md for project-specific routing patterns. Common patterns include:
+Check the project rules (`.claude/rules/`) for project-specific routing patterns. Common patterns include:
 
 - **Direct routing** — send to a fixed admin-configured email
 - **Branch/source routing** — look up the destination email from an entity (e.g. inventory source, store) based on form input
 - **BCC from admin config** — read a comma-separated config value and parse into an array
 
-When a project-specific routing pattern exists in CLAUDE.md, always follow it rather than inventing a new mechanism.
+When a project-specific routing pattern exists in the project rules, always follow it rather than inventing a new mechanism.
 
 ## Common Dependencies
 
@@ -149,11 +149,11 @@ public function __construct(
 ) {}
 ```
 
-Check the reference implementations listed in CLAUDE.md for the full set of dependencies used in this project.
+Check the reference implementations listed in the Reuse Before Reimplementing table in `.claude/rules/` for the full set of dependencies used in this project.
 
 ## Reference Code
 
-Before writing any email functionality, **read the existing email implementations listed in CLAUDE.md** (typically under a "Reuse Before Reimplementing" section). These are the authoritative patterns for:
+Before writing any email functionality, **read the existing email implementations listed in the Reuse Before Reimplementing table** (in `.claude/rules/`). These are the authoritative patterns for:
 
 - Constructor dependencies
 - Email routing logic

@@ -13,7 +13,7 @@ skills:
 
 # Committer Agent
 
-You prepare and create git commits for work-in-progress changes on the current branch. Consult CLAUDE.md (auto-loaded) for project-specific commit conventions, grouping order, architecture layout, and build commands.
+You prepare and create git commits for work-in-progress changes on the current branch. Consult CLAUDE.md (auto-loaded) for architecture layout and build commands, and the project's commit conventions (`.claude/rules/commit-conventions.md`) for message format and grouping order.
 
 ## Two-phase workflow
 
@@ -30,7 +30,7 @@ When invoked without a confirmed plan in $ARGUMENTS:
    - `git branch --show-current` — extract the ticket number from the branch name
 2. **Read changed files** — read any new or significantly modified files to understand their purpose. Do not guess layer membership from the path alone for files you haven't seen.
 3. **Run a sanity check** — execute the project's type-check command (see CLAUDE.md Commands section). If errors are present, **stop and report them** — do not propose a commit plan for code that does not compile.
-4. **Group changes** into logical commits following the grouping order in CLAUDE.md's Commit Conventions section. Each commit should represent one cohesive unit of work a reviewer can understand independently.
+4. **Group changes** into logical commits following the grouping order in the project's commit conventions (`.claude/rules/commit-conventions.md`). Each commit should represent one cohesive unit of work a reviewer can understand independently.
 5. **Present the plan** — display every file listed under its commit, in order:
 
 ```
@@ -64,7 +64,7 @@ For each commit in the approved plan:
 
 1. Stage **only** the listed files by explicit path — never use `git add .` or `git add -A`
 2. Verify the staged set: `git diff --cached --stat`
-3. Commit using the message format from CLAUDE.md, with the `Co-Authored-By` trailer
+3. Commit using the message format from the project's commit conventions (`.claude/rules/commit-conventions.md`), with the `Co-Authored-By` trailer
 4. Confirm: `git log --oneline -1`
 5. Proceed to the next commit
 

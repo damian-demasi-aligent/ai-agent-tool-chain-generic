@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Review the changes in $ARGUMENTS (a PR number, branch name, or leave blank for current branch vs main).
 
-Before starting, **read CLAUDE.md** to identify the project's main branch name, coding conventions, architecture, and any cross-layer sync rules.
+Before starting, **read CLAUDE.md** for the project's main branch name and architecture, and the project rules (`.claude/rules/`) for coding conventions and any cross-layer sync rules.
 
 ## Step 1: Gather context
 
@@ -43,7 +43,7 @@ Assess each changed file against the relevant concerns below, supplemented by pr
 - [ ] `aria-live` used for dynamic content that screen readers should announce
 - [ ] CSS framework classes used consistently (no raw CSS unless necessary)
 - [ ] `handle*` naming for event handlers
-- [ ] Check CLAUDE.md Conventions for additional project-specific React rules
+- [ ] Check the project rules (`.claude/rules/react-conventions.md`) for additional project-specific React rules
 
 ### Magento PHP (if .php/.phtml files changed)
 
@@ -51,7 +51,7 @@ Assess each changed file against the relevant concerns below, supplemented by pr
 - [ ] New modules have `registration.php`, `etc/module.xml`, and `composer.json`
 - [ ] GraphQL resolvers implement `ResolverInterface` correctly
 - [ ] Layout XML uses `referenceBlock`/`referenceContainer` (not full file copies)
-- [ ] Check CLAUDE.md for project-specific PHP conventions (plugin naming, email patterns, etc.)
+- [ ] Check the project rules (`.claude/rules/magento-conventions.md`) for project-specific PHP conventions (plugin naming, email patterns, etc.)
 
 ### Cross-cutting
 

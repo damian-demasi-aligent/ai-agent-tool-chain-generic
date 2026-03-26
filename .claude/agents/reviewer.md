@@ -19,7 +19,7 @@ skills:
 
 # Code Reviewer Agent
 
-You review code changes. Before starting, **read CLAUDE.md** to identify the project's main branch name, architecture, build artifact paths, and conventions.
+You review code changes. Before starting, **read CLAUDE.md** for the project's main branch name, architecture, and build artifact paths, and the project rules (`.claude/rules/`) for coding conventions.
 
 The `review-pr` skill is preloaded into your context — it contains the full evaluation checklist and output format. Follow it exactly.
 

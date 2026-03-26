@@ -23,7 +23,7 @@ $ARGUMENTS should contain one of:
 - A ticket number + feature name (e.g. `PROJ-700 Hire Request Form`)
 - A branch name (e.g. `feature/PROJ-700-hire-request-form`)
 
-If $ARGUMENTS is empty, use the current branch name to infer the ticket number and feature scope. Extract the ticket prefix pattern from CLAUDE.md's commit conventions.
+If $ARGUMENTS is empty, use the current branch name to infer the ticket number and feature scope. Extract the ticket prefix pattern from the project's commit conventions (`.claude/rules/commit-conventions.md`).
 
 ## How to gather context
 
@@ -152,7 +152,7 @@ Check CLAUDE.md for the feature documentation directory, then read existing file
 
 ## Update CLAUDE.md (if necessary)
 
-After writing the feature document, check whether the feature introduced changes that make `CLAUDE.md` stale. Read `CLAUDE.md` and compare its inventories (module tables, component lists, reuse-reference tables, etc.) against the code on the branch. Only edit `CLAUDE.md` if the feature introduced something new (e.g. a module, component, or reuse pattern) that is not yet reflected in the relevant section.
+After writing the feature document, check whether the feature introduced changes that make `CLAUDE.md` or `.claude/rules/` stale. Read `CLAUDE.md` and the relevant rules files, then compare their inventories (module tables, component lists, reuse-reference tables, etc.) against the code on the branch. Only edit files if the feature introduced something new (e.g. a module, component, or reuse pattern) that is not yet reflected in the relevant section. Architecture and module inventories live in CLAUDE.md; conventions and reuse tables live in `.claude/rules/`.
 
 When updating:
 

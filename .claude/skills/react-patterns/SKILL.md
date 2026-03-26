@@ -8,13 +8,13 @@ metadata:
 
 # React Component Patterns
 
-Follow these conventions when writing React code. Before starting, **read CLAUDE.md** for the project's React source path, GraphQL provider structure, path aliases, key dependencies, and coding conventions.
+Follow these conventions when writing React code. Before starting, **read CLAUDE.md** for the project's React source path, GraphQL provider structure, path aliases, and key dependencies. Also read the project rules (`.claude/rules/react-conventions.md`) for coding conventions.
 
 ## Component Structure
 
 - **Check CLAUDE.md** for the React source directory and path alias configuration
 - Components are functional (no class components), one `.tsx` file per component
-- Props/state interfaces are defined inline in the component file, not in separate type files — check CLAUDE.md to confirm this is the project convention
+- Props/state interfaces are defined inline in the component file, not in separate type files — check the project rules (`.claude/rules/react-conventions.md`) to confirm this is the project convention
 - Use barrel `index.ts` exports for component directories
 
 ## State & Data
@@ -22,7 +22,7 @@ Follow these conventions when writing React code. Before starting, **read CLAUDE
 - **Check CLAUDE.md Architecture section** for how GraphQL operations are structured (query/mutation files, provider classes, singleton façade, shared types file)
 - Check whether the project uses GraphQL codegen or manual type definitions
 - New providers must be wired into the project's main provider entry point (documented in CLAUDE.md)
-- Check CLAUDE.md Conventions for the project's API return type (e.g. a discriminated union for success/error)
+- Check the project rules (`.claude/rules/react-conventions.md`) for the project's API return type (e.g. a discriminated union for success/error)
 
 ## DOM Integration
 
@@ -43,4 +43,4 @@ Follow these conventions when writing React code. Before starting, **read CLAUDE
 - Early returns over nested conditionals
 - No `setTimeout`/`setInterval` without strong justification
 - `aria-live` regions for dynamic content updates
-- Check CLAUDE.md Conventions for any additional project-specific rules
+- Check the project rules (`.claude/rules/react-conventions.md`) for any additional project-specific rules

@@ -6,7 +6,7 @@
 
 ## What this project is
 
-Read **CLAUDE.md** at the repo root for the full project overview, including the technology stack, directory structure, and key dependencies. CLAUDE.md is the single source of truth for project-specific details.
+Read **CLAUDE.md** at the repo root for the full project overview, including the technology stack, directory structure, and key dependencies. CLAUDE.md and `.claude/rules/` are the sources of truth for project-specific details and conventions. Rules files load automatically based on the files you're working with.
 
 ---
 

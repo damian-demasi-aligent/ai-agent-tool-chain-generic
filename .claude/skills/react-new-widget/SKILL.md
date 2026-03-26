@@ -9,7 +9,7 @@ metadata:
 
 Create a new React widget named "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's frontend source paths (Architecture section), widget mounting convention, existing widgets list, and React conventions.
+Before starting, **read CLAUDE.md** for the project's frontend source paths (Architecture section), widget mounting convention, and existing widgets list. Also read the project rules (`.claude/rules/react-conventions.md`) for React conventions.
 
 Follow these steps:
 

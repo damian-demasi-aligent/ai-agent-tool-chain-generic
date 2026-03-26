@@ -8,7 +8,7 @@ metadata:
 
 # Magento–React Widget Wiring
 
-React widgets mount into Magento-rendered pages through a specific integration chain. Before starting, **read CLAUDE.md** for the project's mounting convention, script loading mechanism, GraphQL access pattern, and data attribute escaping rules.
+React widgets mount into Magento-rendered pages through a specific integration chain. Before starting, **read CLAUDE.md** for the project's mounting convention, script loading mechanism, and GraphQL access pattern, and the project rules (`.claude/rules/magento-conventions.md`) for data attribute escaping rules.
 
 ## Mounting Convention
 
@@ -37,7 +37,7 @@ All configuration passes through **HTML data attributes** on the mount element. 
 </div>
 ```
 
-**Always use `$escaper->escapeHtmlAttr()`** for data attributes. Use `json_encode()` for arrays/objects. Check CLAUDE.md for any additional escaping rules.
+**Always use `$escaper->escapeHtmlAttr()`** for data attributes. Use `json_encode()` for arrays/objects. Check the project rules (`.claude/rules/magento-conventions.md`) for any additional escaping rules.
 
 ## Reading Config Inside Components
 

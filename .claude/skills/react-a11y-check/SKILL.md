@@ -8,7 +8,7 @@ metadata:
 
 # React Accessibility Patterns
 
-Apply these when writing or reviewing UI code. Before starting, **read CLAUDE.md** for the project's UI library choices (dialog/modal primitives), CSS framework (Tailwind, CSS Modules, etc.), and any project-specific a11y conventions (focus management patterns, error styling constants).
+Apply these when writing or reviewing UI code. Before starting, **read CLAUDE.md** for the project's UI library choices (dialog/modal primitives) and CSS framework (Tailwind, CSS Modules, etc.). Also read the project rules (`.claude/rules/react-conventions.md`) for any project-specific a11y conventions (focus management patterns, error styling constants).
 
 ## Dialogs and Drawers
 
@@ -25,7 +25,7 @@ Apply these when writing or reviewing UI code. Before starting, **read CLAUDE.md
 
 ## Focus Management
 
-- **Check CLAUDE.md** for the project's focus management convention (e.g. declarative boolean flags vs imperative `.focus()` calls)
+- **Check the project rules** (`.claude/rules/react-conventions.md`) for the project's focus management convention (e.g. declarative boolean flags vs imperative `.focus()` calls)
 - Reset focus state when drawers/modals close:
   ```tsx
   useEffect(() => {
@@ -44,7 +44,7 @@ Apply these when writing or reviewing UI code. Before starting, **read CLAUDE.md
 ## Error Display
 
 - Error components must render with both a visual icon and text — do not rely on colour alone
-- **Check CLAUDE.md** for any project-specific error styling constants or components to reuse
+- **Check the project rules** (`.claude/rules/react-conventions.md`) for any project-specific error styling constants or components to reuse
 
 ## Runtime Accessibility Testing (Playwright)
 

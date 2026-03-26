@@ -4,7 +4,7 @@
 #
 # Triggered by PostToolUse on Write and Edit tools.
 # When a file that defines Claude Code tooling (agents, commands, skills, settings,
-# or CLAUDE.md itself) is modified, outputs imperative instructions for Claude Code
+# rules, or CLAUDE.md itself) is modified, outputs imperative instructions for Claude Code
 # to update docs/manuals/ and cross-references so documentation stays in sync.
 #
 # Outputs nothing (exits 0 silently) for all other file modifications.
@@ -42,6 +42,21 @@ You MUST now perform these steps:
 1. Read CLAUDE.md to understand what changed.
 2. Read each of the files in the docs/manuals/ directory and update any sections that are now out of date.
 3. Read docs/manuals/README.md and update the "I need to..." routing, folder map, or review notes if this change affects manual navigation.
+
+Only update what is genuinely affected — do not rewrite sections that are still accurate.
+INSTRUCTIONS
+        ;;
+
+    */.claude/rules/*.md)
+        RULE=$(basename "$FILE_PATH")
+        cat <<INSTRUCTIONS
+[sync-docs] Project rule "${RULE}" was modified.
+
+You MUST now perform these steps:
+
+1. Read .claude/rules/${RULE} to understand what changed.
+2. Read each of the files in the docs/manuals/ directory and update any sections that reference conventions, standards, or commit rules that are now out of date.
+3. Read docs/manuals/README.md and update if this change affects manual navigation.
 
 Only update what is genuinely affected — do not rewrite sections that are still accurate.
 INSTRUCTIONS

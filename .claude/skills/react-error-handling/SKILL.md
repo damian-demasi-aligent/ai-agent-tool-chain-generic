@@ -8,11 +8,11 @@ metadata:
 
 # React Error Handling Patterns
 
-Follow these patterns at each layer for consistent error handling. Before starting, **read CLAUDE.md** for the project's specific error return type, error constants location, and error display conventions.
+Follow these patterns at each layer for consistent error handling. Before starting, **read CLAUDE.md** for the project's Architecture section, and the project rules (`.claude/rules/react-conventions.md`) for the specific error return type, error constants location, and error display conventions.
 
 ## API / Provider Layer
 
-Check CLAUDE.md for the project's API return type convention (e.g. a discriminated union like `ActionResult<T>`). The general pattern:
+Check the project rules (`.claude/rules/react-conventions.md`) for the project's API return type convention (e.g. a discriminated union like `ActionResult<T>`). The general pattern:
 
 ```typescript
 async submitSomething(data: InputType): Promise<Result<ResponseType>> {
@@ -35,7 +35,7 @@ async submitSomething(data: InputType): Promise<Result<ResponseType>> {
 
 ## REST / Fetch Calls
 
-For non-GraphQL fetch calls, use try/catch and report errors through the project's error constant system (check CLAUDE.md for the constants location and shape):
+For non-GraphQL fetch calls, use try/catch and report errors through the project's error constant system (check the project rules in `.claude/rules/react-conventions.md` for the constants location and shape):
 
 ```typescript
 try {
@@ -89,4 +89,4 @@ onNext(formData);
 
 ## Error Display
 
-**Check CLAUDE.md** for the project's error styling constants and conventions. Always show both an icon and text — never rely on colour alone (see the react-a11y-check skill for full accessibility rules).
+**Check the project rules** (`.claude/rules/react-conventions.md`) for the project's error styling constants and conventions. Always show both an icon and text — never rely on colour alone (see the react-a11y-check skill for full accessibility rules).

@@ -9,7 +9,7 @@ metadata:
 
 Create a custom React hook that bridges Magento's server-rendered DOM with React state for "$ARGUMENTS".
 
-Before starting, **read CLAUDE.md** for the project's frontend source paths (Architecture section) and React conventions.
+Before starting, **read CLAUDE.md** for the project's frontend source paths (Architecture section). Also read the project rules (`.claude/rules/react-conventions.md`) for React conventions.
 
 ## Context
 

@@ -8,7 +8,7 @@ metadata:
 
 # Magento 2 Module Patterns
 
-Follow these conventions when working with custom PHP modules. Before starting, **read CLAUDE.md** for the project's vendor namespace, module inventory, plugin naming convention, PHP quality commands, theme path, and any project-specific coding rules.
+Follow these conventions when working with custom PHP modules. Before starting, **read CLAUDE.md** for the project's vendor namespace, module inventory, PHP quality commands, and theme path. Also read the project rules (`.claude/rules/magento-conventions.md`) for the plugin naming convention and any project-specific coding rules.
 
 ## Module Structure
 
@@ -38,7 +38,7 @@ ModuleName/
 ## Plugins
 
 - Register in `etc/di.xml` (or `etc/frontend/di.xml` for frontend-only)
-- **Check CLAUDE.md for the project's plugin naming convention** (e.g. `<prefix>_<module>_<action>`)
+- **Check the project rules** (`.claude/rules/magento-conventions.md`) **for the plugin naming convention** (e.g. `<prefix>_<module>_<action>`)
 - Use `before`/`after` plugins over `around` when possible (less risk of breaking the method chain)
 - First parameter is always `$subject`
 
