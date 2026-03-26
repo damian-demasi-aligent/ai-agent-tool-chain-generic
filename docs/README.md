@@ -156,6 +156,8 @@ Fix issues found by the reviewer or your own inspection. Useful slash commands f
 | `/react-new-widget` | Create a new React widget entry point |
 | `/layout-diff` | Compare a theme layout override with its vendor original |
 
+For frontend/UI bugs, use `@frontend-debugger` — it instruments code with a log server, collects runtime evidence, and fixes based on actual behaviour rather than guesswork. When the Playwright MCP is available, it automates bug reproduction via browser automation.
+
 See [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md) for the full list of available commands, agents, and skills.
 
 ### Step 5 — Quality checks
