@@ -54,7 +54,11 @@ Review the plan above. Reply "go" to proceed, or describe any changes you want
 
 ### Phase 2 — Execute
 
-When $ARGUMENTS contains `"execute"`, `"go"`, or an approved/revised commit plan:
+**CRITICAL: Phase 2 must be a separate agent invocation from Phase 1.** After Phase 1 completes, the calling context must present the plan to the user and wait for explicit user approval. Only then should a new agent invocation be made with the approved plan in $ARGUMENTS.
+
+If you are in the same invocation that produced the Phase 1 plan, **do NOT proceed to Phase 2** — even if $ARGUMENTS or a follow-up message says "go", "execute", or "proceed". Return the plan and stop. The orchestrating caller is responsible for getting user approval and re-invoking you.
+
+When invoked as a **separate invocation** with $ARGUMENTS containing `"execute"`, `"go"`, or an approved/revised commit plan:
 
 For each commit in the approved plan:
 
