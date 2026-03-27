@@ -20,9 +20,9 @@
 
 This toolchain uses two invocation styles throughout:
 
-| Syntax | What it invokes | Example | When to use |
-|---|---|---|---|
-| `@name` | **Agent** — an autonomous subagent that runs in its own context | `@committer`, `@documenter` | Long-running, multi-step tasks |
+| Syntax  | What it invokes                                                     | Example                          | When to use                         |
+| ------- | ------------------------------------------------------------------- | -------------------------------- | ----------------------------------- |
+| `@name` | **Agent** — an autonomous subagent that runs in its own context     | `@committer`, `@documenter`      | Long-running, multi-step tasks      |
 | `/name` | **Skill** — a prompt template that runs in the current conversation | `/plan-feature`, `/detect-stack` | Orchestration commands, scaffolding |
 
 Both are typed directly in the Claude Code prompt. Agents can spawn sub-agents and use tools autonomously; skills execute within your current session.
@@ -46,6 +46,12 @@ docs/                      <- This folder -- living documentation that agents re
 ```
 
 **CLAUDE.md** and **`.claude/rules/`** are the sources of truth for project-specific data and conventions. The `.claude/` tools (agents, skills) and `docs/manuals/` all reference them dynamically rather than hardcoding values — this is what makes the entire system portable across projects. Rules files load automatically based on the files being edited, scoping conventions to where they're relevant.
+
+---
+
+## Tutorial about how to use this toolchain
+
+The "Claude Code Feature Development Toolchain: A Step-by-Step Tutorial" Confluence tutorial can be [found here](https://aligent.atlassian.net/wiki/spaces/AL/pages/4713447425/Claude+Code+Feature+Development+Toolchain+A+Step-by-Step+Tutorial).
 
 ---
 
@@ -87,13 +93,13 @@ Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + Bi
 
 #### Troubleshooting setup
 
-| Problem | Solution |
-|---|---|
-| `/detect-stack` got the stack wrong | Edit `.claude/stack-config.json` manually to fix capabilities, then re-run `/setup-project` |
+| Problem                                       | Solution                                                                                                                                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/detect-stack` got the stack wrong           | Edit `.claude/stack-config.json` manually to fix capabilities, then re-run `/setup-project`                                                                                                       |
 | `/setup-project` pruned a skill/hook you need | Check `.claude/setup-log.md` to see what was removed. Restore from git (`git checkout -- .claude/skills/<name>/`) and remove the skill's entry from `stack-capabilities.json` so it's always kept |
-| CLAUDE.md has incorrect project details | Edit it directly — it's a regular markdown file. The toolchain reads it at runtime |
-| A rules file has wrong conventions | Edit the relevant `.claude/rules/*.md` file directly |
-| Want to re-run setup from scratch | Copy the toolchain files again from the template repo and repeat Steps 2-3 |
+| CLAUDE.md has incorrect project details       | Edit it directly — it's a regular markdown file. The toolchain reads it at runtime                                                                                                                |
+| A rules file has wrong conventions            | Edit the relevant `.claude/rules/*.md` file directly                                                                                                                                              |
+| Want to re-run setup from scratch             | Copy the toolchain files again from the template repo and repeat Steps 2-3                                                                                                                        |
 
 ---
 
@@ -148,13 +154,13 @@ The `/implement-feature` skill orchestrates:
 
 Fix issues found by the reviewer or your own inspection. Useful slash commands for targeted work:
 
-| Command | What it does |
-|---|---|
-| `/gql` | Scaffold a GraphQL mutation + resolver + types |
-| `/plugin` | Create a Magento plugin with di.xml wiring |
-| `/email-template` | Scaffold transactional email (model + templates + config) |
-| `/react-new-widget` | Create a new React widget entry point |
-| `/layout-diff` | Compare a theme layout override with its vendor original |
+| Command             | What it does                                              |
+| ------------------- | --------------------------------------------------------- |
+| `/gql`              | Scaffold a GraphQL mutation + resolver + types            |
+| `/plugin`           | Create a Magento plugin with di.xml wiring                |
+| `/email-template`   | Scaffold transactional email (model + templates + config) |
+| `/react-new-widget` | Create a new React widget entry point                     |
+| `/layout-diff`      | Compare a theme layout override with its vendor original  |
 
 For frontend/UI bugs, use `@frontend-debugger` — it instruments code with a log server, collects runtime evidence, and fixes based on actual behaviour rather than guesswork. When the Playwright MCP is available, it automates bug reproduction via browser automation.
 
@@ -220,12 +226,12 @@ Run `@committer` again to commit the architecture document, then create the PR.
 | Get oriented in this repo                    | [manuals/00-getting-started/onboarding.md](manuals/00-getting-started/onboarding.md)                           |
 | Plan and deliver a feature                   | [manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md)                     |
 | Debug something broken                       | [manuals/02-playbooks/debugging.md](manuals/02-playbooks/debugging.md)                                         |
-| Explore unfamiliar code                      | [manuals/02-playbooks/exploration-and-investigation.md](manuals/02-playbooks/exploration-and-investigation.md)  |
+| Explore unfamiliar code                      | [manuals/02-playbooks/exploration-and-investigation.md](manuals/02-playbooks/exploration-and-investigation.md) |
 | Look up an agent or skill                    | [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md)                       |
 | Understand an architecture decision          | [manuals/05-concepts/](manuals/05-concepts/) — one topic per file                                              |
-| Read the plan for a feature in progress      | `plans/` — one file per planned feature                                                                          |
-| Understand a completed feature's design      | `features/` — architecture documents with Mermaid diagrams                                                       |
-| Read the original requirements for a feature | `requirements/` — ticket exports and spec documents                                                              |
+| Read the plan for a feature in progress      | `plans/` — one file per planned feature                                                                        |
+| Understand a completed feature's design      | `features/` — architecture documents with Mermaid diagrams                                                     |
+| Read the original requirements for a feature | `requirements/` — ticket exports and spec documents                                                            |
 
 ---
 
