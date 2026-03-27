@@ -2,7 +2,7 @@
 name: documenter
 color: cyan
 description: Generate a feature architecture document by reading the code on the current branch, then propose lessons learned for codification. Use after implementing a feature to create Mermaid diagrams, data flows, deployment steps, and distil reusable patterns into project rules.
-tools: Read, Write, Edit, Grep, Glob, Bash
+tools: Read, Write, Edit, Grep, Glob, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_wait_for
 model: opus
 skills:
   - react-patterns

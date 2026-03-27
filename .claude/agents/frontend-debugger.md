@@ -2,7 +2,7 @@
 name: frontend-debugger
 color: red
 description: Debug frontend/UI bugs using runtime evidence. Starts a log server, instruments code, collects logs, and fixes based on evidence. When Playwright MCP is available, automates bug reproduction and verification via browser automation instead of asking the user to manually interact. Use when investigating UI bugs, state issues, or unexpected behavior that needs runtime data.
-tools: Read, Write, Edit, Grep, Glob, Bash
+tools: Read, Write, Edit, Grep, Glob, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_click, mcp__playwright__browser_fill_form, mcp__playwright__browser_type, mcp__playwright__browser_press_key, mcp__playwright__browser_select_option, mcp__playwright__browser_hover, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_wait_for, mcp__playwright__browser_navigate_back, mcp__playwright__browser_tabs, mcp__playwright__browser_close, mcp__playwright__browser_evaluate, mcp__playwright__browser_handle_dialog, mcp__playwright__browser_resize, mcp__playwright__browser_drag, mcp__playwright__browser_file_upload, mcp__playwright__browser_run_code, mcp__playwright__browser_install
 model: opus
 skills:
   - debug-frontend

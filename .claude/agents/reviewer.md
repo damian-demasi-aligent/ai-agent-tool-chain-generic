@@ -2,7 +2,7 @@
 name: reviewer
 color: cyan
 description: Review code changes (current branch, PR, or specific files) for correctness, patterns compliance, and cross-boundary consistency. Use after making changes or before merging.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_wait_for
 model: opus
 skills:
   - review-pr

@@ -2,7 +2,7 @@
 name: preflight
 color: blue
 description: Run frontend and backend preflight checks (lint, types, build, a11y, runtime smoke test via Playwright, PHP quality) and report results. Use before committing or pushing to verify the codebase is clean.
-tools: Bash, Read, Grep, Glob
+tools: Bash, Read, Grep, Glob, mcp__playwright__browser_navigate, mcp__playwright__browser_click, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_wait_for
 model: sonnet
 skills:
   - react-a11y-check
