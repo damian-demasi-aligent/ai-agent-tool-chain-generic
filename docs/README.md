@@ -288,4 +288,14 @@ Ticket exports, spec documents, and acceptance criteria. Drop files here before 
 
 Utility scripts for the development workflow (e.g., ticket fetchers). These are optional and project-specific.
 
+### `examples/`
+
+Reference examples showing what `/setup-project` generates for different technology stacks:
+
+- **`magento-react/`** — Magento 2 + React/Vite (same content as root-level `.example` files)
+- **`nextjs/`** — Next.js 15 + React 19 + Apollo Client monorepo
+- **`react-spa/`** — React SPA + Vite + REST API (TanStack Query, Zustand, React Router)
+
+These files are reference only — they are not consumed by the toolchain and do not need to be deleted during setup.
+
 ---

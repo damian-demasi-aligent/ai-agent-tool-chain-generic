@@ -221,4 +221,9 @@ If corrections are needed, ask follow-up questions for the specific values, then
 After confirmation, report:
 - The saved config file path: `.claude/stack-config.json`
 - The detected capabilities
+- **Relevant example:** Point the developer to the matching example in `docs/examples/` so they can preview what `/setup-project` will generate:
+  - Magento + React capabilities → `docs/examples/magento-react/`
+  - Next.js capability → `docs/examples/nextjs/`
+  - React without Magento or Next.js → `docs/examples/react-spa/`
+  - If no example matches the detected stack, note that the root-level `CLAUDE.md.example` shows the general structure
 - Next step: "Run `/setup-project` to generate CLAUDE.md, rules files, and configure the toolchain for your project."
