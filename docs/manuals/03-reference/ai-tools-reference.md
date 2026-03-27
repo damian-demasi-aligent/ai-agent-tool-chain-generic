@@ -52,6 +52,7 @@ Skills are invoked with `/skill-name` in the conversation. They run in the curre
 |---|---|
 | `/plan-feature [requirements file, ticket, or description]` | Orchestrate the full planning workflow: spawn `codebase-qa` sub-agents for research + `impact-analyser` sub-agents for ripple effects, then delegate to `@feature-planner` with findings. Returns a file-by-file implementation plan. |
 | `/implement-feature [plan file path]` | Orchestrate the full implementation workflow: validate the plan, spawn `@feature-implementer` in the working directory, then spawn `@reviewer` to review the result. Returns a combined report with change summary, verification results, and code review findings. The review feedback is informational output for the user — it does not trigger automated fixes. |
+| `/correct-course [plan file path] ["reason"]` | Amend an implementation plan mid-feature. Compares the plan to current state (checklist, git diff, commit log), proposes targeted amendments, and updates the plan file after approval. Appends a Course Corrections log and flags lessons learned candidates for the documenter. |
 
 #### Feature scaffolding
 
@@ -114,6 +115,7 @@ These are loaded automatically into agents that declare them. They inject projec
 | I want to know what a layout change does | `/layout-diff` |
 | I want to know what will break if I change X | `@impact-analyser` |
 | I'm starting a large feature | `/plan-feature` → `/implement-feature` |
+| The plan is wrong mid-implementation | `/correct-course` — amends the plan, documents why, flags lessons learned |
 | I'm adding a new React widget | `/react-new-widget` |
 | I'm adding a form | `/react-form-wizard` |
 | I'm adding a GraphQL operation | `/gql` (auto-detects whether PHP side is needed) |

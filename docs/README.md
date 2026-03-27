@@ -164,6 +164,14 @@ Fix issues found by the reviewer or your own inspection. Useful slash commands f
 
 For frontend/UI bugs, use `@frontend-debugger` — it instruments code with a log server, collects runtime evidence, and fixes based on actual behaviour rather than guesswork. When the Playwright MCP is available, it automates bug reproduction via browser automation.
 
+If the plan itself is wrong (an assumption didn't hold, requirements changed, or the reviewer flagged a fundamental issue), run `/correct-course` to amend it:
+
+```
+/correct-course docs/plans/PROJ-123-feature.md "the API doesn't support batch mutations"
+```
+
+This compares the plan to the current implementation state, proposes targeted amendments, and updates the plan file with a documented correction log. Resume implementation from the updated plan.
+
 See [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md) for the full list of available commands, agents, and skills.
 
 ### Step 5 — Quality checks

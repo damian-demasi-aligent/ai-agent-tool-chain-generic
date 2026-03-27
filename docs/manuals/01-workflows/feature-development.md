@@ -21,6 +21,7 @@ For canonical agent and skill definitions, use [`../03-reference/ai-tools-refere
 | New DB column, table, or EAV attribute         | `/data-patch`                               |
 | Transactional emails (confirmation + internal) | `/email-template`                           |
 | New feature spanning multiple layers           | [Full workflow](#complex-features)          |
+| Plan is wrong mid-implementation               | `/correct-course` to amend the plan         |
 
 ---
 
@@ -36,6 +37,8 @@ flowchart TD
     D --> E["2️⃣ Phase 2: Implement + review<br/>/implement-feature (spawns implementer + reviewer)"]
     E --> F{Code works?}
     F -- "Needs modifications" --> G[Fix issues via Main Agent<br/>with targeted skills or manual edits]
+    F -- "Plan is wrong" --> CC["/correct-course<br/>Amend the plan"]
+    CC --> E
     G --> E2["Re-run @preflight to verify fixes"]
     E2 --> F
     F -- Yes --> H["3️⃣ Phase 3: QA baseline<br/>@preflight"]
@@ -88,6 +91,16 @@ The `/implement-feature` skill orchestrates the full implementation workflow in 
 The review feedback is **informational output for the user** — it does not trigger automated fixes. You decide which findings to address and how.
 
 > The output includes a **"Key files to understand"** list — read those files and trace the primary data flow yourself before moving on. The review checks correctness, but only you can verify that you understand what was built. See `05-concepts/knowledgebase-comprehension-debt.md`.
+
+#### When the plan is wrong — course correction
+
+If during implementation or review you discover the plan won't work (an assumption was wrong, a dependency doesn't behave as expected, or requirements changed), amend the plan before continuing:
+
+```
+/correct-course docs/plans/TICKET-XXX-feature-name.md "reason for the deviation"
+```
+
+This compares the plan to the current implementation state (checklist progress, files changed, git log signals), proposes targeted amendments, and updates the plan file after your approval. A Course Corrections log is appended to the plan documenting what changed and why — this feeds the documenter's lessons learned step later. Resume implementation from the updated plan.
 
 ### Phase 3 — QA
 
