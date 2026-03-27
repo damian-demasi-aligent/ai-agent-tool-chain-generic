@@ -357,8 +357,7 @@ The config.sh should always source cleanly — missing variables should be empty
 ## Phase 9: Clean docs and finalize
 
 1. **Delete concept docs**: `rm -rf docs/manuals/05-concepts/*` (these are stack-specific examples; the project will build its own over time)
-2. **Delete setup prompts**: Remove `docs/prompts/generate-claude-md-for-new-project.md` and `docs/prompts/review-claude-toolchain-for-new-project.md` (replaced by `/detect-stack` + `/setup-project`)
-3. **Delete example files**: Remove `CLAUDE.md.example` and all `.claude/rules/*.md.example` files (if they exist) since the real CLAUDE.md and rules files have been generated
+2. **Delete example files**: Remove `CLAUDE.md.example` and all `.claude/rules/*.md.example` files (if they exist) since the real CLAUDE.md and rules files have been generated
 4. **Update docs/README.md**: Replace Magento-specific references with generic language appropriate to the detected stack
 5. **Genericize onboarding**: Update `docs/manuals/00-getting-started/onboarding.md` to reference the actual project stack instead of Magento+React
 6. **Delete stack-config.json**: Remove `.claude/stack-config.json` — it has been consumed and its values are now in CLAUDE.md, `.claude/rules/`, and config.sh. Keeping it would create a stale second source of truth.
