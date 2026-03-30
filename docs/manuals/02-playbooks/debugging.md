@@ -59,12 +59,7 @@ Returns: mount point, data flow, live status (if Playwright was used), likely fa
 /preflight
 ```
 
-Both run the same three checks in sequence (using commands from CLAUDE.md → Commands):
-1. Lint check — ESLint
-2. Type check — TypeScript
-3. Production build — Vite
-
-The difference: `/preflight react` scopes checks to React source and can suggest fixes in the current conversation. The `/preflight` skill spawns the preflight agent which reports independently — it never modifies files. Use `/preflight` when you want a clean read without any auto-suggestions.
+Both spawn the preflight agent, which runs checks in sequence using commands from CLAUDE.md → Commands. `/preflight react` scopes to frontend checks only; `/preflight` without arguments runs the full suite (frontend + backend). The agent reports results but never modifies files — you decide what to fix.
 
 If `check-types` fails after a GraphQL schema change, run `/react-sync-types` first — the types and schema may have drifted.
 
@@ -143,7 +138,7 @@ If a page looks wrong after a code change — broken layout, missing elements, o
 /visual-regression http://localhost:3000/affected-page
 ```
 
-Captures screenshots via Playwright and analyses for visual issues. If the `@feature-implementer` captured before/after screenshots during implementation (in `docs/requirements/<TICKET>/tmp/`), the skill uses those for comparison.
+Captures screenshots via Playwright and analyses for visual issues. If `/implement-feature` captured before/after screenshots during implementation (in `docs/requirements/<TICKET>/tmp/`), the skill uses those for comparison.
 
 For performance regressions (page loads slower after a change):
 

@@ -39,9 +39,9 @@ CLAUDE.md                  <- Project-specific config: architecture, commands, k
   stack-capabilities.json  <- Maps skills/hooks/rules to required stack capabilities
 docs/                      <- This folder -- living documentation that agents read and write during feature work
   manuals/                 <- Workflow guides, playbooks, reference, and architecture concepts
-  plans/                   <- Implementation plans (input for @feature-implementer)
+  plans/                   <- Implementation plans (input for /implement-feature)
   features/                <- Architecture documents for completed features
-  requirements/            <- Tickets and spec documents (input for @feature-planner)
+  requirements/            <- Tickets and spec documents (input for /plan-feature)
   scripts/                 <- Utility scripts (e.g., Jira ticket fetcher)
 ```
 
@@ -105,7 +105,7 @@ Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + Bi
 
 ## Workflow for implementing a feature
 
-This is the end-to-end process for delivering a feature using the `.claude/` toolchain. Each step uses a specific agent or manual action, and `docs/` folders act as the handoff points between phases.
+This is the end-to-end process for delivering a feature using the `.claude/` toolchain. Each step uses a specific skill or manual action, and `docs/` folders act as the handoff points between phases.
 
 For the full detailed guide with flowcharts and slash command inventory, see [manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md).
 
@@ -162,7 +162,7 @@ Fix issues found by the reviewer or your own inspection. Useful slash commands f
 | `/react-new-widget` | Create a new React widget entry point                     |
 | `/layout-diff`      | Compare a theme layout override with its vendor original  |
 
-For frontend/UI bugs, use `@frontend-debugger` — it instruments code with a log server, collects runtime evidence, and fixes based on actual behaviour rather than guesswork. When the Playwright MCP is available, it automates bug reproduction via browser automation.
+For frontend/UI bugs that aren't obvious from static checks or review feedback, use `/debug-frontend` to diagnose with runtime evidence. For a single, straightforward bug, run it directly in your current session — the skill handles hypothesis generation, instrumentation, reproduction (automated via Playwright when available), and log-based analysis inline. For multiple bugs or complex issues requiring extended investigation, branch off the main session using `/branch`, run `/debug-frontend` in the branched session, then `/resume` back to the main session once the fix is in place. The branched session inherits your implementation context while keeping the verbose debugging output separate. See [the detailed workflow guide](manuals/01-workflows/feature-development.md#when-a-bug-needs-runtime-debugging) for more on both approaches.
 
 If the plan itself is wrong (an assumption didn't hold, requirements changed, or the reviewer flagged a fundamental issue), run `/correct-course` to amend it:
 
@@ -204,7 +204,7 @@ Analyses all uncommitted changes and proposes a logical breakdown into ordered c
 /document TICKET-XXX
 ```
 
-Generates an architecture document at `docs/features/TICKET-XXX-feature-name.md`. **Mandatory for multi-layer features.** After writing the document, the agent analyses the implementation for lessons learned — non-obvious patterns, gotchas, or new reuse references — and proposes them as concrete additions to `CLAUDE.md` or `.claude/rules/` for your approval.
+Generates an architecture document at `docs/features/TICKET-XXX-feature-name.md`. **Mandatory for multi-layer features.** After writing the document, `/document` analyses the implementation for lessons learned — non-obvious patterns, gotchas, or new reuse references — and proposes them as concrete additions to `CLAUDE.md` or `.claude/rules/` for your approval.
 
 ### Step 9 — Commit documentation and create PR
 
@@ -216,8 +216,8 @@ Run `/commit` again to commit the architecture document, then create the PR.
 
 | Folder          | Written by                | Read by                      | Purpose in the workflow         |
 | --------------- | ------------------------- | ---------------------------- | ------------------------------- |
-| `requirements/` | Developer (manual)        | `@feature-planner`           | Input: what to build            |
-| `plans/`        | `@feature-planner`        | `@feature-implementer`       | Handoff: how to build it        |
+| `requirements/` | Developer (manual)        | `/plan-feature`              | Input: what to build            |
+| `plans/`        | `/plan-feature`           | `/implement-feature`         | Handoff: how to build it        |
 | `features/`     | `/document`               | Future developers, AI agents | Output: how it was built        |
 | `manuals/`      | Maintained with toolchain | Developers, AI agents        | Reference: how to use the tools |
 
@@ -255,7 +255,7 @@ See [manuals/README.md](manuals/README.md) for the full folder map and quick loo
 
 ### `plans/`
 
-Implementation plans produced by the `@feature-planner` agent. Each file represents a planned feature with a file-by-file breakdown, risk assessment, and implementation checklist.
+Implementation plans produced by `/plan-feature`. Each file represents a planned feature with a file-by-file breakdown, risk assessment, and implementation checklist.
 
 **Naming convention:** `TICKET-XXX-feature-name.md`
 
@@ -280,7 +280,7 @@ Architecture documents for completed features. Each document includes Mermaid di
 
 ### `requirements/`
 
-Ticket exports, spec documents, and acceptance criteria. Drop files here before running `@feature-planner` — the planner reads this folder to understand scope.
+Ticket exports, spec documents, and acceptance criteria. Drop files here before running `/plan-feature` — the planner reads this folder to understand scope.
 
 **Supported formats:** XML exports, text files, markdown, images.
 

@@ -51,7 +51,7 @@ flowchart TD
     M --> N[Ready for PR]
 ```
 
-Use this path for features spanning multiple layers (for example: PHP module work, GraphQL schema/resolvers, React widgets, and email flows). It is an agent-first workflow, with each phase mapped to a dedicated agent or skill.
+Use this path for features spanning multiple layers (for example: PHP module work, GraphQL schema/resolvers, React widgets, and email flows). It is a skill-first workflow, with each phase mapped to a dedicated skill that orchestrates agents under the hood.
 
 **Model allocation principle — "Opus reasons, Sonnet reads":** You invoke skills (e.g. `/preflight`, `/commit`, `/test`), which internally spawn agents on the appropriate model. Research agents (`codebase-qa`, `impact-analyser`) and mechanical agents (`preflight`, `committer`, `test-runner`) run on Sonnet for speed and cost efficiency. Reasoning-heavy agents (`feature-planner`, `feature-implementer`, `reviewer`, `documenter`) run on Opus for higher-quality output.
 
