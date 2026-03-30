@@ -102,6 +102,14 @@ If during implementation or review you discover the plan won't work (an assumpti
 
 This compares the plan to the current implementation state (checklist progress, files changed, git log signals), proposes targeted amendments, and updates the plan file after your approval. A Course Corrections log is appended to the plan documenting what changed and why — this feeds the documenter's lessons learned step later. Resume implementation from the updated plan.
 
+#### When a bug needs runtime debugging
+
+If the generated code doesn't work and the issue isn't obvious from the review feedback or static checks, use `/debug-frontend` to diagnose it with runtime evidence rather than guessing. There are two approaches depending on complexity:
+
+**Inline debugging (single bug, straightforward to reproduce):** Run `/debug-frontend` directly in your current session. The skill walks you through hypothesis generation, code instrumentation, reproduction (automated via Playwright when available, or manual), and log-based analysis — all within the same conversation. This is the simplest path: one session, no context switching. The debugging output adds to your conversation history, but Claude Code compresses older messages automatically, and the subsequent phases (`/preflight`, `/test`, `/commit`) spawn their own agents that read from the filesystem, not from conversation history.
+
+**Branched debugging (multiple bugs, or a complex issue requiring extended investigation):** If you're dealing with several bugs or an issue that will require many iterations of hypothesise-instrument-reproduce-analyse, consider branching off the main Claude Code session using the `/branch` command for the debugging work. The branched session starts with the context of the old session and can read the same codebase. Once in the new branched session, run `/debug-frontend`. Once the fix is implemented, go back to the previous session using the `/resume` command. The fix lands in the filesystem (your git working tree), so when you return to your main session the code changes are already visible. This keeps your main session's context focused on the feature implementation flow, which is valuable when the remaining phases (QA, commit, documentation) benefit from that accumulated context. Use this approach when you expect the debugging to be a long, verbose conversation that would push useful implementation context out of the window.
+
 ### Phase 3 — QA
 
 ```
