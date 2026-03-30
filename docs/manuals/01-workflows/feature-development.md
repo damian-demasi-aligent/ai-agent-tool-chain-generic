@@ -39,21 +39,21 @@ flowchart TD
     F -- "Needs modifications" --> G[Fix issues via Main Agent<br/>with targeted skills or manual edits]
     F -- "Plan is wrong" --> CC["/correct-course<br/>Amend the plan"]
     CC --> E
-    G --> E2["Re-run @preflight to verify fixes"]
+    G --> E2["Re-run /preflight to verify fixes"]
     E2 --> F
-    F -- Yes --> H["3️⃣ Phase 3: QA baseline<br/>@preflight"]
+    F -- Yes --> H["3️⃣ Phase 3: QA baseline<br/>/preflight"]
     H --> I{Tests exist?}
-    I -- Yes --> J["4️⃣ Phase 4: Run tests<br/>@test-runner changed"]
-    I -- No --> K["5️⃣ Phase 5: Commit<br/>@committer then reply 'go'"]
+    I -- Yes --> J["4️⃣ Phase 4: Run tests<br/>/test changed"]
+    I -- No --> K["5️⃣ Phase 5: Commit<br/>/commit then reply 'go'"]
     J --> K
-    K --> L["6️⃣ Phase 6: Document (mandatory)<br/>@documenter TICKET-XXX"]
-    L --> M["Commit documentation<br/>@committer then reply 'go'"]
+    K --> L["6️⃣ Phase 6: Document (mandatory)<br/>/document TICKET-XXX"]
+    L --> M["Commit documentation<br/>/commit then reply 'go'"]
     M --> N[Ready for PR]
 ```
 
 Use this path for features spanning multiple layers (for example: PHP module work, GraphQL schema/resolvers, React widgets, and email flows). It is an agent-first workflow, with each phase mapped to a dedicated agent or skill.
 
-**Model allocation principle — "Opus reasons, Sonnet reads":** Research agents (`codebase-qa`, `impact-analyser`) and mechanical agents (`preflight`, `committer`, `test-runner`) run on Sonnet for speed and cost efficiency. Reasoning-heavy agents (`feature-planner`, `feature-implementer`, `reviewer`, `documenter`) run on Opus for higher-quality output.
+**Model allocation principle — "Opus reasons, Sonnet reads":** You invoke skills (e.g. `/preflight`, `/commit`, `/test`), which internally spawn agents on the appropriate model. Research agents (`codebase-qa`, `impact-analyser`) and mechanical agents (`preflight`, `committer`, `test-runner`) run on Sonnet for speed and cost efficiency. Reasoning-heavy agents (`feature-planner`, `feature-implementer`, `reviewer`, `documenter`) run on Opus for higher-quality output.
 
 ### Phase 0 — Fetch requirements
 
@@ -105,7 +105,7 @@ This compares the plan to the current implementation state (checklist progress, 
 ### Phase 3 — QA
 
 ```
-@preflight
+/preflight
 ```
 
 Runs the full preflight quality suite. The specific checks depend on your stack — see CLAUDE.md Commands section for what runs. Typically includes linting, type-checking, production build, accessibility audits for frontend, runtime smoke test via Playwright (navigates pages, checks for JS errors and hydration failures), and code style and static analysis for backend.
@@ -129,28 +129,28 @@ If you only need one layer while iterating, pass the layer name:
 ### Phase 4 — Run tests (if applicable)
 
 ```
-@test-runner changed
+/test changed
 ```
 
-Run after preflight and before committing. The `@test-runner` agent runs tests for changed files only. If no test infrastructure exists yet, this phase can be skipped — but consider running `/react-add-tests setup` to bootstrap Vitest for future work.
+Run after preflight and before committing. The `/test` skill runs tests for changed files only. If no test infrastructure exists yet, this phase can be skipped — but consider running `/react-add-tests setup` to bootstrap Vitest for future work.
 
 ### Phase 5 — Commit
 
 ```
-@committer
+/commit
 ```
 
-The committer analyses all uncommitted changes, reads the modified files to understand their layer, and proposes a logical breakdown into ordered commits following the message format from CLAUDE.md → Commit Conventions (typically `TICKET-XXX: Verb phrase`). Review the proposed plan, then reply `"go"` to execute.
+The `/commit` skill analyses all uncommitted changes, reads the modified files to understand their layer, and proposes a logical breakdown into ordered commits following the message format from CLAUDE.md → Commit Conventions (typically `TICKET-XXX: Verb phrase`). Review the proposed plan, then reply `"go"` to execute.
 
 ### Phase 6 — Document (mandatory)
 
 ```
-@documenter TICKET-XXX
+/document TICKET-XXX
 ```
 
 **This phase is not optional.** Every complex feature must have an architecture document before the PR is created. Without it, future developers (and AI agents) have no way to understand the feature's design without re-reading every file.
 
-The documenter reads the code on the current branch and generates `docs/features/TICKET-XXX-feature-name.md`. The document includes Mermaid diagrams, module structure, data flows, admin configuration, deployment steps, and feature screenshots captured via Playwright (when the dev server is available). Review the generated document, resolve any `[TODO: verify]` items, and commit it as a final commit on the branch.
+The `/document` skill reads the code on the current branch and generates `docs/features/TICKET-XXX-feature-name.md`. The document includes Mermaid diagrams, module structure, data flows, admin configuration, deployment steps, and feature screenshots captured via Playwright (when the dev server is available). Review the generated document, resolve any `[TODO: verify]` items, and commit it as a final commit on the branch.
 
 ---
 
@@ -231,7 +231,7 @@ See existing files in `docs/features/` for examples.
 | ------------------ | ------------------------------------------------------------------------- |
 | Branch name        | `feature/TICKET-XXX-short-description` or `bugfix/TICKET-XXX-description` |
 | Commit message     | `TICKET-XXX: Verb phrase describing the change`                           |
-| Commit granularity | One logical unit per commit — the `committer` agent handles this          |
+| Commit granularity | One logical unit per commit — the `/commit` skill handles this            |
 | Base branch        | See CLAUDE.md → Commit Conventions for the main branch name               |
 
-The `committer` agent extracts the ticket number from the branch name automatically.
+The `/commit` skill extracts the ticket number from the branch name automatically.

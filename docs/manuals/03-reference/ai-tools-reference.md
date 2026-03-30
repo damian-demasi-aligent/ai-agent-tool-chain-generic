@@ -6,25 +6,25 @@
 
 ## Agents
 
-Agents are autonomous subprocesses invoked with `@agent-name`. They run independently, read files, and return a single result to the conversation.
+Agents are autonomous subprocesses invoked with `@agent-name`. They run independently, read files, and return a single result to the conversation. User-facing agents now have corresponding `/skill` entry points for a uniform invocation experience (e.g., `/commit` instead of `@committer`). Internal and research agents (`codebase-qa`, `impact-analyser`) can still be invoked directly with `@name`.
 
 | Agent | Invoke | Purpose |
 |---|---|---|
 | `codebase-qa` | `@codebase-qa [question]` | Answer "how does X work" questions by reading the actual source. Returns file paths and line references. |
-| `committer` | `@committer` | Analyse uncommitted changes, propose a logical commit breakdown, and execute after approval. [Two-phase workflow.](#committer) |
-| `documenter` | `@documenter [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, deployment steps, and feature screenshots (via Playwright when available). After writing, analyses the implementation for lessons learned and proposes additions to `CLAUDE.md` or `.claude/rules/` for approval. |
+| `committer` | `/commit` | Analyse uncommitted changes, propose a logical commit breakdown, and execute after approval. [Two-phase workflow.](#committer) |
+| `documenter` | `/document [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, deployment steps, and feature screenshots (via Playwright when available). After writing, analyses the implementation for lessons learned and proposes additions to `CLAUDE.md` or `.claude/rules/` for approval. |
 | `feature-implementer` | `@feature-implementer [plan or task]` | Write code across all project layers following project conventions. Captures before/after screenshots (via Playwright) for visual comparison, runs static checks and browser verification, and produces a change summary with verification results. Best used via `/implement-feature` which also orchestrates the code review. |
 | `feature-planner` | `@feature-planner [feature description]` | Produce a file-by-file implementation plan from requirements and optional pre-researched findings. Best used via `/plan-feature` which provides research automatically. |
 | `impact-analyser` | `@impact-analyser [file, type, or description]` | Trace all dependencies of a target and report what else will need to change. |
-| `preflight` | `@preflight` | Run full preflight quality checks including runtime smoke test via Playwright (see CLAUDE.md Commands for the specific checks). Report results only — never modifies files. |
+| `preflight` | `/preflight` | Run full preflight quality checks including runtime smoke test via Playwright (see CLAUDE.md Commands for the specific checks). Report results only — never modifies files. |
 | `reviewer` | `@reviewer` | Review the current branch diff against the main branch (from CLAUDE.md). Includes visual diff with screenshots when CSS/layout/component files changed (via Playwright). Returns per-file issues with severity and a merge verdict. |
-| `test-runner` | `@test-runner [scope?]` | Run the Vitest test suite and report results. Accepts a component name, file path, or `changed` to run only tests for changed files. Guides setup if test infrastructure is missing. |
+| `test-runner` | `/test [scope?]` | Run the Vitest test suite and report results. Accepts a component name, file path, or `changed` to run only tests for changed files. Guides setup if test infrastructure is missing. |
 
 ### `committer` — two-phase workflow
 
 Phase 1 (default — invoke with no arguments):
 ```
-@committer
+/commit
 ```
 Returns a proposed commit plan. Does not create any commits.
 
@@ -81,11 +81,12 @@ Skills are invoked with `/skill-name` in the conversation. They run in the curre
 | `/visual-regression [url1] [url2]` | Capture screenshots of pages and compare for unintended visual changes. Infers affected pages from `git diff` if no URLs provided. Requires Playwright MCP. |
 | `/lighthouse-audit [url1] [url2]` | Run Lighthouse performance, accessibility, best practices, and SEO audits. Reports scores, core web vitals, and failed audits with thresholds. |
 
-#### Git
+#### Git and Documentation
 
 | Skill | Purpose |
 |---|---|
-| `/commit-pr` | Interactive commit workflow: analyse changes, propose plan, wait for approval, execute commits. |
+| `/commit` | Interactive commit workflow: analyse changes, propose plan, wait for approval, execute commits. |
+| `/document [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, deployment steps, and feature screenshots (via Playwright). |
 | `/review-pr [PR#/branch]` | Review a PR or branch diff with project-specific checklist (conventions from CLAUDE.md). |
 
 ### Agent context skills (not user-invocable)
@@ -131,13 +132,13 @@ These are loaded automatically into agents that declare them. They inject projec
 | My GraphQL types are out of sync | `/react-sync-types` |
 | I want to check for visual regressions after CSS/layout changes | `/visual-regression` — captures screenshots via Playwright and flags unintended changes |
 | I want to run a Lighthouse performance/a11y audit | `/lighthouse-audit` — reports scores, core web vitals, and failed audits |
-| I want to run quality checks (React + PHP) | `@preflight` — now includes runtime smoke test via Playwright when available |
+| I want to run quality checks (React + PHP) | `/preflight` — now includes runtime smoke test via Playwright when available |
 | I want to run quality checks for one stack only | `/preflight react` or `/preflight php` |
 | I want to add tests | `/react-add-tests` |
-| I want to run existing tests | `@test-runner` or `@test-runner changed` |
-| I want to review before committing | `@reviewer` — run this **before** `@committer` to catch bugs while code is still uncommitted |
-| I'm ready to commit | `@committer` — run this **after** `@reviewer` and any fixes are applied |
-| I need to document a completed feature | `@documenter TICKET-XXX` — generates `docs/features/` architecture doc with Mermaid diagrams |
+| I want to run existing tests | `/test` or `/test changed` |
+| I want to review before committing | `/review-pr` — run this **before** `/commit` to catch bugs while code is still uncommitted |
+| I'm ready to commit | `/commit` — run this **after** `/review-pr` and any fixes are applied |
+| I need to document a completed feature | `/document TICKET-XXX` — generates `docs/features/` architecture doc with Mermaid diagrams |
 | I'm debugging a broken widget or PHP error | See [debugging.md](../02-playbooks/debugging.md) for guided workflows |
 | I'm exploring unfamiliar code or tracing dependencies | See [exploration-and-investigation.md](../02-playbooks/exploration-and-investigation.md) for investigation patterns |
 

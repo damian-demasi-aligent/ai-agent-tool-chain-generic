@@ -152,7 +152,7 @@ docs/
 
 **`docs/plans/`** — Save `feature-planner` output here as `CCG-XXX-feature-name.md` before implementation begins. The `feature-implementer` agent takes a plan file as its input. Plans are living documents — update them if scope changes during implementation.
 
-**`docs/features/`** — **Mandatory for complex features.** After implementing a multi-layer feature, create an architecture document here before creating the PR. Run `@documenter CCG-XXX` to generate it, then commit as the final commit on the branch. Without this document, future developers and AI agents cannot understand the feature's design without re-reading every file. See existing files in this folder for reference examples. The `committer` agent prompts for this after commits are created.
+**`docs/features/`** — **Mandatory for complex features.** After implementing a multi-layer feature, create an architecture document here before creating the PR. Run `/document CCG-XXX` to generate it, then commit as the final commit on the branch. Without this document, future developers and AI agents cannot understand the feature's design without re-reading every file. See existing files in this folder for reference examples. The `/commit` skill prompts for this after commits are created.
 
 **`docs/manuals/`** — Structured AI tooling docs by intent (`getting-started/`, `workflows/`, `playbooks/`, `reference/`, `concepts/`). Start from `docs/manuals/README.md`. Do not edit these manually — they are maintained alongside the `.claude/` tool definitions.
 

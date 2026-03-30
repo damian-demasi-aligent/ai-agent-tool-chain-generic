@@ -5,7 +5,6 @@ description: Analyse uncommitted branch changes, propose a logical commit breakd
 tools: Bash, Read, Glob, Grep
 model: sonnet
 skills:
-  - commit-pr
   - react-patterns
   - react-best-practices
   - magento-module
@@ -73,7 +72,7 @@ If a pre-commit hook fails, **stop immediately** — report the error and do not
 ## After all commits succeed
 
 1. **Update CLAUDE.md** — check if committed changes affect the project's architecture documentation (new modules, new widgets, new dependencies, new conventions). If so, propose specific additions and wait for approval before applying.
-2. **Feature documentation reminder** — if CLAUDE.md describes a feature documentation workflow (e.g. a `docs/features/` directory or a documenter tool), check whether a document exists for this ticket. If not and the branch contains a multi-layer feature, remind the user to generate one.
+2. **Feature documentation reminder** — if CLAUDE.md describes a feature documentation workflow (e.g. a `docs/features/` directory or a documenter tool), check whether a document exists for this ticket. If not and the branch contains a multi-layer feature, remind the user to run `/document <TICKET>` to generate one.
 
 ## Safety rules
 

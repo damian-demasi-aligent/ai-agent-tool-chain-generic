@@ -32,7 +32,7 @@ If either check fails, **stop and report:**
 Test infrastructure is not set up in this project.
 
 Run `/react-add-tests setup` to bootstrap Vitest, Testing Library, and the test scripts.
-After setup, run `@test-runner` again.
+After setup, run `/test` again.
 ```
 
 Do NOT attempt to install dependencies or create config files — that is the `react-add-tests` skill's responsibility.
@@ -110,13 +110,13 @@ No test files found in the project.
 To get started:
   1. Run `/react-add-tests setup` to install Vitest and Testing Library
   2. Run `/react-add-tests <ComponentName>` to write tests for a specific component
-  3. Run `@test-runner` to execute the suite
+  3. Run `/test` to execute the suite
 ```
 
-## Related agents and commands
+## Related commands
 
 - **`/react-add-tests`** — write new tests or bootstrap test infrastructure
-- **`@preflight`** — run lint, type-check, build, and a11y audit (complements this agent)
-- **`@reviewer`** — review code changes including test coverage gaps
+- **`/preflight`** — run lint, type-check, build, and a11y audit (complements this agent)
+- **`/review-pr`** — review code changes including test coverage gaps
 
 Do NOT attempt to fix any failing tests. Only report them.

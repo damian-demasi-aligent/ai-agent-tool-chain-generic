@@ -124,7 +124,7 @@ description: Code quality tool configuration and general coding principles
 - General rule: "Always read existing code before writing new code" (from old `### General Code` convention)
 - Detected standards: ESLint config, Prettier config, PHPCS config, EditorConfig
 - List the detected standards and formatting rules
-- Tooling notes: describe which hooks are active for this stack (e.g. PostToolUse ESLint auto-fix, @preflight usage)
+- Tooling notes: describe which hooks are active for this stack (e.g. PostToolUse ESLint auto-fix, /preflight usage)
 
 #### `.claude/rules/commit-conventions.md`
 
@@ -266,7 +266,7 @@ paths:
 
 ### Skills to KEEP:
 - react-patterns (requires: react ✓)
-- commit-pr (always kept)
+- commit (always kept)
 - ...
 
 ### Hooks to DELETE:

@@ -15,5 +15,5 @@ description: Code quality tool configuration and general coding principles
 ## Tooling
 
 - Claude `PostToolUse` hook auto-runs `yarn eslint --fix` and `yarn eslint` for edited source files under `apps/` and `libs/`
-- Use `@preflight` before commit — it runs lint, type-check, build, and a focused a11y audit on changed components
+- Use `/preflight` before commit — it runs lint, type-check, build, and a focused a11y audit on changed components
 - When creating agent/skill files, keep them project-agnostic. Project-specific context belongs in CLAUDE.md, not in reusable agent definitions

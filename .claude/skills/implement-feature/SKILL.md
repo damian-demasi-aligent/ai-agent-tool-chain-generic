@@ -124,9 +124,9 @@ Present all of this to the user, then provide next steps:
 
 2. **Fix review issues** (if any) — Address findings from the code review before committing
 
-3. **Commit the changes** — When satisfied, use `@committer` to create structured commits following the project's grouping conventions
+3. **Commit the changes** — When satisfied, use `/commit` to create structured commits following the project's grouping conventions
 
-4. **Generate documentation** — For multi-layer features, use `@documenter [ticket]` to create a feature architecture document in docs/features/
+4. **Generate documentation** — For multi-layer features, use `/document [ticket]` to create a feature architecture document in docs/features/
 ```
 
 If the implementer reported blocked items or failures, highlight those prominently so the user knows what needs manual attention.

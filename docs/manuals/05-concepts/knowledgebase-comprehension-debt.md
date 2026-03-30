@@ -4,7 +4,7 @@
 
 Comprehension debt is the growing gap between how much code exists in a system and how much of it any human genuinely understands. Unlike technical debt, it accumulates invisibly — the codebase appears healthy (tests pass, linting is clean, types check) while understanding erodes underneath.
 
-This toolchain accelerates code generation significantly. A developer can go from Jira ticket to merged PR using `@feature-planner` → `@feature-implementer` → `@committer` without reading a single line of generated code. That's the comprehension debt trap.
+This toolchain accelerates code generation significantly. A developer can go from Jira ticket to merged PR using `/plan-feature` → `/implement-feature` → `/commit` without reading a single line of generated code. That's the comprehension debt trap.
 
 ## Why AI tooling amplifies the risk
 
@@ -18,17 +18,17 @@ This toolchain accelerates code generation significantly. A developer can go fro
 
 | Step | Passive (debt-accumulating) | Active (debt-avoiding) |
 |------|---------------------------|----------------------|
-| `@feature-planner` | Approve the plan without reading the reference strategy or novelty assessment | Verify you can explain the data flow end-to-end before approving |
-| `@feature-implementer` | Read only the change summary, skip the actual files | Read the "key files to understand" list and trace the primary flow yourself |
-| Auto `@reviewer` | See "no blockers" and proceed immediately | Read the reviewer's findings and check whether they match your own understanding |
-| `@documenter` | Commit the architecture doc without reading it | Use the doc to verify your mental model matches what was built |
-| `@committer` | Reply "go" to the commit plan | Check that the commit grouping matches your understanding of the feature's layers |
+| `/plan-feature` | Approve the plan without reading the reference strategy or novelty assessment | Verify you can explain the data flow end-to-end before approving |
+| `/implement-feature` | Read only the change summary, skip the actual files | Read the "key files to understand" list and trace the primary flow yourself |
+| Auto review | See "no blockers" and proceed immediately | Read the reviewer's findings and check whether they match your own understanding |
+| `/document` | Commit the architecture doc without reading it | Use the doc to verify your mental model matches what was built |
+| `/commit` | Reply "go" to the commit plan | Check that the commit grouping matches your understanding of the feature's layers |
 
 ## How to use this toolchain actively
 
 ### Before planning: build your own mental model first
 
-Before running `@feature-planner`, use `@codebase-qa` to ask questions about the area you're working in. This builds understanding *before* the planner does its research, so you can evaluate the plan critically rather than accepting it on trust.
+Before running `/plan-feature`, use `@codebase-qa` to ask questions about the area you're working in. This builds understanding *before* the planner does its research, so you can evaluate the plan critically rather than accepting it on trust.
 
 ```
 @codebase-qa How does the [reference module] handle [the pattern you need]?
@@ -55,7 +55,7 @@ The implementer's output includes a "Key files to understand" section listing th
 
 ### During documentation review: use it as a comprehension test
 
-When the `@documenter` generates the architecture document, read it as a quiz: does the diagram match your understanding? Can you follow the sequence diagram without surprises? Any mismatch between the doc and your mental model is a comprehension gap to investigate.
+When the `/document` skill generates the architecture document, read it as a quiz: does the diagram match your understanding? Can you follow the sequence diagram without surprises? Any mismatch between the doc and your mental model is a comprehension gap to investigate.
 
 ## The rule
 

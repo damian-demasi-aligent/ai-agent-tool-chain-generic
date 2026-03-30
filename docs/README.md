@@ -16,16 +16,16 @@
 
 ---
 
-## Invocation syntax: `@` vs `/`
+## Invocation syntax
 
-This toolchain uses two invocation styles throughout:
+All workflow steps use **skill** syntax — type `/name` in the Claude Code prompt:
 
-| Syntax  | What it invokes                                                     | Example                          | When to use                         |
-| ------- | ------------------------------------------------------------------- | -------------------------------- | ----------------------------------- |
-| `@name` | **Agent** — an autonomous subagent that runs in its own context     | `@committer`, `@documenter`      | Long-running, multi-step tasks      |
-| `/name` | **Skill** — a prompt template that runs in the current conversation | `/plan-feature`, `/detect-stack` | Orchestration commands, scaffolding |
+| Syntax  | What it invokes                                                     | Example                          |
+| ------- | ------------------------------------------------------------------- | -------------------------------- |
+| `/name` | **Skill** — the standard way to invoke toolchain commands           | `/plan-feature`, `/commit`, `/preflight` |
+| `@name` | **Agent** — direct access to a subagent for ad-hoc research         | `@codebase-qa`, `@impact-analyser` |
 
-Both are typed directly in the Claude Code prompt. Agents can spawn sub-agents and use tools autonomously; skills execute within your current session.
+Skills handle orchestration, scaffolding, and workflow steps. Some skills delegate to agents under the hood (e.g. `/preflight` spawns the `preflight` agent). For ad-hoc investigation, you can still invoke research agents directly with `@name`.
 
 ---
 
@@ -177,7 +177,7 @@ See [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-r
 ### Step 5 — Quality checks
 
 ```
-@preflight
+/preflight
 ```
 
 Runs the full quality suite. The specific checks depend on your stack (see CLAUDE.md Commands). Fix any reported issues before proceeding.
@@ -185,7 +185,7 @@ Runs the full quality suite. The specific checks depend on your stack (see CLAUD
 ### Step 6 — Run tests (if applicable)
 
 ```
-@test-runner changed
+/test changed
 ```
 
 Runs tests for changed files only.
@@ -193,7 +193,7 @@ Runs tests for changed files only.
 ### Step 7 — Commit
 
 ```
-@committer
+/commit
 ```
 
 Analyses all uncommitted changes and proposes a logical breakdown into ordered commits following your project's commit conventions (from CLAUDE.md). Review the plan, then reply `"go"` to execute.
@@ -201,14 +201,14 @@ Analyses all uncommitted changes and proposes a logical breakdown into ordered c
 ### Step 8 — Document
 
 ```
-@documenter TICKET-XXX
+/document TICKET-XXX
 ```
 
 Generates an architecture document at `docs/features/TICKET-XXX-feature-name.md`. **Mandatory for multi-layer features.** After writing the document, the agent analyses the implementation for lessons learned — non-obvious patterns, gotchas, or new reuse references — and proposes them as concrete additions to `CLAUDE.md` or `.claude/rules/` for your approval.
 
 ### Step 9 — Commit documentation and create PR
 
-Run `@committer` again to commit the architecture document, then create the PR.
+Run `/commit` again to commit the architecture document, then create the PR.
 
 ---
 
@@ -218,7 +218,7 @@ Run `@committer` again to commit the architecture document, then create the PR.
 | --------------- | ------------------------- | ---------------------------- | ------------------------------- |
 | `requirements/` | Developer (manual)        | `@feature-planner`           | Input: what to build            |
 | `plans/`        | `@feature-planner`        | `@feature-implementer`       | Handoff: how to build it        |
-| `features/`     | `@documenter`             | Future developers, AI agents | Output: how it was built        |
+| `features/`     | `/document`               | Future developers, AI agents | Output: how it was built        |
 | `manuals/`      | Maintained with toolchain | Developers, AI agents        | Reference: how to use the tools |
 
 **CLAUDE.md and `.claude/rules/` configure everything.** Every agent and skill reads CLAUDE.md for architecture, commands, and paths, and `.claude/rules/` for conventions, commit format, and reuse references.
@@ -274,7 +274,7 @@ Architecture documents for completed features. Each document includes Mermaid di
 
 **Naming convention:** `TICKET-XXX-feature-name.md`
 
-**When to create:** After implementing a multi-layer feature, before creating the PR. Run `@documenter TICKET-XXX` to generate the document. The `@committer` agent reminds you if one is missing.
+**When to create:** After implementing a multi-layer feature, before creating the PR. Run `/document TICKET-XXX` to generate the document. The `/commit` skill reminds you if one is missing.
 
 **Why it matters:** Without these documents, future developers and AI agents must re-read every file to understand a feature's design. The architecture document provides the map.
 

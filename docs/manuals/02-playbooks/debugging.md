@@ -54,9 +54,9 @@ Returns: mount point, data flow, live status (if Playwright was used), likely fa
 ## TypeScript or ESLint errors
 
 ```
-/react-preflight
+/preflight react
 — or —
-@preflight
+/preflight
 ```
 
 Both run the same three checks in sequence (using commands from CLAUDE.md → Commands):
@@ -64,7 +64,7 @@ Both run the same three checks in sequence (using commands from CLAUDE.md → Co
 2. Type check — TypeScript
 3. Production build — Vite
 
-The difference: `/react-preflight` runs in the current conversation and can suggest fixes. The `preflight` agent runs independently and only reports — it never modifies files. Use `preflight` when you want a clean read without any auto-suggestions.
+The difference: `/preflight react` scopes checks to React source and can suggest fixes in the current conversation. The `/preflight` skill spawns the preflight agent which reports independently — it never modifies files. Use `/preflight` when you want a clean read without any auto-suggestions.
 
 If `check-types` fails after a GraphQL schema change, run `/react-sync-types` first — the types and schema may have drifted.
 

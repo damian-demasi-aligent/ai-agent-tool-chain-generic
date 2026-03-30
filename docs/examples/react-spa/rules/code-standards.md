@@ -15,4 +15,4 @@ description: Code quality tool configuration and general coding principles
 ## Tooling
 
 - Claude `PostToolUse` hook auto-runs `npm run lint -- --fix` and `npm run lint` for edited source files under `src/`
-- Use `@preflight` before commit — it runs lint, type-check, build, and a focused a11y audit on changed components
+- Use `/preflight` before commit — it runs lint, type-check, build, and a focused a11y audit on changed components
