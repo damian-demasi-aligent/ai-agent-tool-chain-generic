@@ -8,13 +8,13 @@ description: Code quality tool configuration and general coding principles
 
 ## Detected Standards
 
-- **ESLint:** `@aligent/ts-code-standards` with React config; `@typescript-eslint/consistent-type-assertions: never`
+- **ESLint:** project ESLint configuration with TypeScript and React support
 - **Prettier:** Tailwind-aware; sorts classes in `classNames` and `clsx` calls
-- **EditorConfig:** 4-space indent for TS/PHP/PHTML, 2-space for YAML/JSON/MD, LF line endings, 100-char max line length
-- **PHP:** PHPCS Magento2 standard; PHPStan level 0
+- **EditorConfig:** 4-space indent for TS/PHP/PHTML, 2-space for YAML/JSON/MD, LF line endings
+- **PHP:** PHPCS Magento2 standard; PHPStan for static analysis
 
 ## Tooling
 
-- Claude `PostToolUse` hook auto-runs `yarn eslint --fix` and `yarn eslint` for edited React source files under `app/code/CountryCareGroup/React/view/frontend/src/app/`
+- Claude `PostToolUse` hook auto-runs ESLint fix for edited React source files under the frontend source directory
 - Use `/preflight` before commit for React changes — it runs lint, type-check, build, and a focused a11y audit on changed components
 - When creating agent/skill files, keep them project-agnostic. Project-specific context belongs in CLAUDE.md, not in reusable agent definitions

@@ -11,11 +11,11 @@ Theme-level styles use LESS (not Tailwind — Tailwind is only for React compone
 
 ## Colour Variables
 
-Theme colour variables are prefixed `@ccg-theme__color__*` (primary, secondary, tertiary, black, white, info-blue, and variants) — always use these instead of hardcoding hex values.
+Theme colour variables should use a consistent prefix (e.g. `@theme__color__*` for primary, secondary, tertiary, and variants) — always use these instead of hardcoding hex values.
 
 ## Custom Mixins
 
-Custom mixins live in `web/css/source/lib/_ccg-mixins.less` (page titles, modals) and `web/css/source/_mixins.less` (buttons, dropdowns, Font Awesome icons). Before writing new styles, search the theme's mixin files to see if a reusable mixin already exists.
+Custom mixins should live in dedicated mixin files within the theme's LESS source directory. Before writing new styles, search the theme's mixin files to see if a reusable mixin already exists.
 
 ## File Organisation
 

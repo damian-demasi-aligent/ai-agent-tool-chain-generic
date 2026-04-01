@@ -20,6 +20,6 @@ No testing framework is currently installed. When bootstrapping tests, use Vites
 Key testing priorities by layer:
 
 - **Hooks** — mock DOM APIs (MutationObserver, elements), test cleanup on unmount, test null/missing element cases
-- **Provider methods** — mock Apollo Client, test both success and error paths of the `ActionResult<T>` return type
-- **Form components** — test Zod validation (valid/invalid), multi-step navigation, error display
+- **Provider methods** — mock the API client, test both success and error paths
+- **Form components** — test validation (valid/invalid), multi-step navigation, error display
 - **Widget entry points** — mock `document.querySelectorAll`, verify `createRoot` is called for each matched element, test data attribute reading

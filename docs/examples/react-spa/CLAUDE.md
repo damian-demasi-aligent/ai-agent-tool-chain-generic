@@ -100,15 +100,15 @@ docs/
 
 **`docs/requirements/`** — Jira ticket content (description, comments, mockup images) fetched via `docs/scripts/fetch-jira-ticket.sh`. The `feature-planner` agent reads these to understand scope — including attached images for UI placement. To fetch a ticket: `./docs/scripts/fetch-jira-ticket.sh <TICKET-ID>` (reads credentials from `.env.development` — see `.env.development.example`)
 
-**`docs/plans/`** — Save `feature-planner` output here as `WMS-XXX-feature-name.md` before implementation begins. The `feature-implementer` agent takes a plan file as its input. Plans are living documents — update them if scope changes during implementation.
+**`docs/plans/`** — Save `feature-planner` output here as `PROJ-XXX-feature-name.md` before implementation begins. The `feature-implementer` agent takes a plan file as its input. Plans are living documents — update them if scope changes during implementation.
 
-**`docs/features/`** — **Mandatory for complex features.** After implementing a multi-layer feature, create an architecture document here before creating the PR. Run `/document WMS-XXX` to generate it, then commit as the final commit on the branch. Without this document, future developers and AI agents cannot understand the feature's design without re-reading every file.
+**`docs/features/`** — **Mandatory for complex features.** After implementing a multi-layer feature, create an architecture document here before creating the PR. Run `/document PROJ-XXX` to generate it, then commit as the final commit on the branch. Without this document, future developers and AI agents cannot understand the feature's design without re-reading every file.
 
 **`docs/manuals/`** — Structured AI tooling docs by intent (`getting-started/`, `workflows/`, `playbooks/`, `reference/`, `concepts/`). Start from `docs/manuals/README.md`. Do not edit these manually — they are maintained alongside the `.claude/` tool definitions.
 
 ### When to consult `docs/` before starting work
 
-- **Picking up an existing feature** → read `docs/features/<WMS-XXX>.md` for architecture context before touching any code
+- **Picking up an existing feature** → read `docs/features/<PROJ-XXX>.md` for architecture context before touching any code
 - **Starting a new feature** → check `docs/plans/` for an existing plan before asking `feature-planner` to re-plan
 - **Unsure which tool to use** → read `docs/manuals/reference/ai-tools-reference.md`
 - **New to the repo** → start with `docs/manuals/getting-started/onboarding.md`

@@ -9,10 +9,10 @@ description: Commit message format, ticket prefix, Co-Authored-By trailer, and c
 ## Message format
 
 ```
-WMS-XXX: <Verb> <what changed>
+PROJ-XXX: <Verb> <what changed>
 ```
 
-- **Ticket prefix** — extracted from the branch name (e.g. `feature/WMS-55-order-filters` -> `WMS-55`)
+- **Ticket prefix** — extracted from the branch name (e.g. `feature/PROJ-55-order-filters` -> `PROJ-55`)
 - **Imperative mood** — "Add", "Update", "Fix", "Remove", "Wire" — not "Added" or "Adding"
 - **Subject <= 72 characters**; add a body after a blank line if needed
 - **Capital letter** after the colon, **no trailing period**
