@@ -20,6 +20,12 @@
           {
             "type": "command",
             "command": "bash .claude/hooks/graphql-sync-check.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/validate-commit-msg.sh",
+            "if": "Bash(git commit:*)",
+            "statusMessage": "Validating commit message..."
           }
         ]
       }
