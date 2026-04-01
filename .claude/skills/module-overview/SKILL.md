@@ -1,7 +1,7 @@
 ---
 name: module-overview
 description: Give me a concise overview of the Magento module "$ARGUMENTS".
-argument-hint: Module name (e.g., "CountryCareGroup_Hire", "Magento_Catalog")
+argument-hint: Module name (e.g., "VendorName_ModuleName", "Magento_Catalog")
 disable-model-invocation: true
 metadata:
   capabilities: [magento]

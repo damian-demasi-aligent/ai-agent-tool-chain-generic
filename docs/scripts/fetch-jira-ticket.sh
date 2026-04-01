@@ -8,11 +8,11 @@
 #   ./docs/scripts/fetch-jira-ticket.sh <email> <api-token> <ticket-id>      (explicit credentials)
 #
 # Example:
-#   ./docs/scripts/fetch-jira-ticket.sh CCG-676
-#   ./docs/scripts/fetch-jira-ticket.sh user@aligent.com.au xxxxxxxxxxx CCG-676
+#   ./docs/scripts/fetch-jira-ticket.sh PROJ-123
+#   ./docs/scripts/fetch-jira-ticket.sh user@example.com xxxxxxxxxxx PROJ-123
 #
 # Credentials:
-#   Set JIRA_EMAIL and JIRA_API_TOKEN in .env.development (see .env.development.example).
+#   Set JIRA_BASE_URL, JIRA_EMAIL, and JIRA_API_TOKEN in .env.development (see .env.development.example).
 #   CLI arguments override .env.development values.
 #
 # Output:
@@ -38,6 +38,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 ENV_FILE="${REPO_ROOT}/.env.development"
 if [[ -f "${ENV_FILE}" ]]; then
     # Source only JIRA_* vars to avoid polluting the environment
+    JIRA_BASE_URL="${JIRA_BASE_URL:-$(grep -E '^JIRA_BASE_URL=' "${ENV_FILE}" | cut -d'=' -f2- | tr -d "'" | tr -d '"')}"
     JIRA_EMAIL="${JIRA_EMAIL:-$(grep -E '^JIRA_EMAIL=' "${ENV_FILE}" | cut -d'=' -f2- | tr -d "'" | tr -d '"')}"
     JIRA_TOKEN="${JIRA_API_TOKEN:-$(grep -E '^JIRA_API_TOKEN=' "${ENV_FILE}" | cut -d'=' -f2- | tr -d "'" | tr -d '"')}"
 fi
@@ -55,21 +56,21 @@ else
     echo "Usage: $0 <ticket-id>                           (uses .env.development credentials)"
     echo "       $0 <jira-email> <jira-api-token> <ticket-id>"
     echo ""
-    echo "Example: $0 CCG-676"
+    echo "Example: $0 PROJ-123"
     echo ""
-    echo "Set JIRA_EMAIL and JIRA_API_TOKEN in .env.development (see .env.development.example)."
+    echo "Set JIRA_BASE_URL, JIRA_EMAIL, and JIRA_API_TOKEN in .env.development (see .env.development.example)."
     exit 1
 fi
 
 # Validate credentials are available
 if [[ -z "${JIRA_EMAIL:-}" || -z "${JIRA_TOKEN:-}" ]]; then
     echo "Error: Jira credentials not found."
-    echo "Either pass them as arguments or set JIRA_EMAIL and JIRA_API_TOKEN in .env.development"
+    echo "Either pass them as arguments or set JIRA_BASE_URL, JIRA_EMAIL, and JIRA_API_TOKEN in .env.development"
     echo "See .env.development.example for the expected format."
     exit 1
 fi
 
-JIRA_BASE="https://aligent.atlassian.net"
+JIRA_BASE="${JIRA_BASE_URL:-https://your-org.atlassian.net}"
 API_URL="${JIRA_BASE}/rest/api/3/issue/${TICKET_ID}"
 AUTH="${JIRA_EMAIL}:${JIRA_TOKEN}"
 
