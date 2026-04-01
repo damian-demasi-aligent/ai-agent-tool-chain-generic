@@ -348,6 +348,7 @@ For each hook in the `hooks` mapping in `stack-capabilities.json`:
 
 Rewrite `.claude/hooks/config.sh` with values from `stack-config.json`:
 
+- Always set `COMMIT_PREFIX_PATTERN` from `stack-config.json` `commitPrefix` (e.g., `"PROJ-[0-9]+"`)
 - If `magento` capability: set `VENDOR_NAMESPACE`, module paths
 - If `react` capability: set `REACT_SRC`, `REACT_BUILD_JS`, `REACT_BUILD_CSS`
 - If `graphql` capability: set `GQL_SCHEMA_GLOB`, `GQL_TEMPLATES_GLOB`, `GQL_TYPES_FILE`

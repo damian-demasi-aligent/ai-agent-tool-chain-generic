@@ -31,7 +31,7 @@
     "graphql-sync-check.sh": ["magento", "graphql", "react"],
     "react-lint-on-edit.sh": ["react"]
   },
-  "$hooks-always-kept": ["core-vendor-guard.sh", "sync-manuals-check.sh", "config.sh"],
+  "$hooks-always-kept": ["core-vendor-guard.sh", "sync-manuals-check.sh", "config.sh", "validate-commit-msg.sh"],
   "rules": {
     "react-conventions.md": ["react"],
     "magento-conventions.md": ["magento"],

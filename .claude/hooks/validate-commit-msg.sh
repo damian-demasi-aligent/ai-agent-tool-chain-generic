@@ -18,6 +18,11 @@
 
 set -euo pipefail
 
+# Source project config for COMMIT_PREFIX_PATTERN (if available)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=config.sh
+[ -f "$SCRIPT_DIR/config.sh" ] && source "$SCRIPT_DIR/config.sh"
+
 INPUT=$(cat)
 
 COMMAND=$(echo "$INPUT" | python3 -c "
@@ -68,7 +73,8 @@ print('')
 
 SUBJECT=$(echo "$MSG" | head -n 1)
 BRANCH=$(git branch --show-current 2>/dev/null || echo "")
-TICKET=$(echo "$BRANCH" | grep -oE '[A-Z]+-[0-9]+' | head -n 1 || true)
+PREFIX_RE="${COMMIT_PREFIX_PATTERN:-[A-Z]+-[0-9]+}"
+TICKET=$(echo "$BRANCH" | grep -oE "$PREFIX_RE" | head -n 1 || true)
 
 ERRORS=()
 

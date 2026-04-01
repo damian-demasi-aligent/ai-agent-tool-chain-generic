@@ -10,6 +10,12 @@
 # /detect-stack followed by /setup-project to populate automatically.
 #
 
+# ── Commit conventions ─────────────────────────────────────────────────
+# Regex pattern to extract a ticket prefix from the branch name.
+# Examples: "CCG-[0-9]+" for Jira project CCG, "PROJ-[0-9]+" for PROJ.
+# Leave empty to auto-detect any UPPERCASE-digits pattern ([A-Z]+-[0-9]+).
+export COMMIT_PREFIX_PATTERN=""
+
 # ── Magento backend (capability: magento) ──────────────────────────────
 # Set VENDOR_NAMESPACE to your Magento vendor namespace (e.g., "Acme").
 # Leave empty for non-Magento projects.
