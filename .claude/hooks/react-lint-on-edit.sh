@@ -27,6 +27,9 @@ except Exception:
 HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$HOOK_DIR/config.sh"
 
+# Skip if no React source path configured
+[ -z "$REACT_SRC" ] && exit 0
+
 case "$FILE_PATH" in
     */${REACT_SRC}/*.[jt]s | \
     */${REACT_SRC}/*.[jt]sx)
@@ -41,13 +44,16 @@ esac
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 cd "$REPO_ROOT"
 
-if yarn eslint --fix "$FILE_PATH" >/dev/null 2>&1; then
+FIX="${LINT_FIX_CMD:-yarn eslint --fix}"
+CHECK="${LINT_CMD:-yarn eslint}"
+
+if $FIX "$FILE_PATH" >/dev/null 2>&1; then
     FIX_EXIT=0
 else
     FIX_EXIT=$?
 fi
 
-if yarn eslint "$FILE_PATH" >/dev/null 2>&1; then
+if $CHECK "$FILE_PATH" >/dev/null 2>&1; then
     CHECK_EXIT=0
 else
     CHECK_EXIT=$?
@@ -56,7 +62,7 @@ fi
 if [ "$FIX_EXIT" -eq 0 ] && [ "$CHECK_EXIT" -eq 0 ]; then
     CONTEXT="[react-lint-on-edit] ESLint fix and check passed for ${FILE_PATH}."
 else
-    CONTEXT="[react-lint-on-edit] ESLint check still reports issues for ${FILE_PATH}. Run yarn eslint --fix '${FILE_PATH}' and review remaining lint errors."
+    CONTEXT="[react-lint-on-edit] ESLint check still reports issues for ${FILE_PATH}. Run ${FIX} '${FILE_PATH}' and review remaining lint errors."
 fi
 
 cat <<EOF

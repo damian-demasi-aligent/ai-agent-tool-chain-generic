@@ -38,9 +38,13 @@ source "$HOOK_DIR/config.sh"
 BUILD_JS="$REACT_BUILD_JS"
 BUILD_CSS="$REACT_BUILD_CSS"
 
+# Skip if no build paths configured
+[[ -z "$BUILD_JS" && -z "$BUILD_CSS" ]] && exit 0
+
 UNSTAGED=""
 
 for DIR in "$BUILD_JS" "$BUILD_CSS"; do
+    [ -z "$DIR" ] && continue
     if git diff --cached --name-only -- "$DIR" 2>/dev/null | grep -q .; then
         git reset HEAD -- "$DIR" 2>/dev/null
         UNSTAGED="$UNSTAGED $DIR"
@@ -50,6 +54,7 @@ done
 DELETED=""
 
 for DIR in "$BUILD_JS" "$BUILD_CSS"; do
+    [ -z "$DIR" ] && continue
     if [ -d "$DIR" ]; then
         rm -rf "$DIR"
         DELETED="$DELETED $DIR"

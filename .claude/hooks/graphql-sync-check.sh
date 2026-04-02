@@ -43,6 +43,9 @@ esac
 HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$HOOK_DIR/config.sh"
 
+# Skip if GraphQL sync paths are not configured
+[[ -z "$GQL_SCHEMA_GLOB" || -z "$GQL_TEMPLATES_GLOB" || -z "$GQL_TYPES_FILE" ]] && exit 0
+
 # Check staged files for each layer
 STAGED=$(git diff --cached --name-only 2>/dev/null || true)
 [ -z "$STAGED" ] && exit 0
@@ -53,10 +56,10 @@ HAS_TS_TYPES=false
 
 while IFS= read -r file; do
     case "$file" in
-        app/code/${VENDOR_NAMESPACE}/*/etc/schema.graphqls)
+        ${GQL_SCHEMA_GLOB})
             HAS_SCHEMA=true
             ;;
-        ${REACT_SRC}/AdobeProvider/GQL/*.ts)
+        ${GQL_TEMPLATES_GLOB})
             HAS_GQL_TEMPLATES=true
             ;;
         ${GQL_TYPES_FILE})
@@ -88,13 +91,13 @@ fi
 if $HAS_GQL_TEMPLATES; then
     PRESENT="$PRESENT GQL templates"
 else
-    MISSING="$MISSING GQL templates (AdobeProvider/GQL/*.ts)"
+    MISSING="$MISSING GQL templates (${GQL_TEMPLATES_GLOB})"
 fi
 
 if $HAS_TS_TYPES; then
     PRESENT="$PRESENT TypeScript types"
 else
-    MISSING="$MISSING TypeScript types (ccgProvider.ts)"
+    MISSING="$MISSING TypeScript types (${GQL_TYPES_FILE})"
 fi
 
 cat <<EOF
