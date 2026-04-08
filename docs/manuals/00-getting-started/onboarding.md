@@ -72,6 +72,12 @@ Use targeted slash commands if available for your stack (check `docs/manuals/03-
 
 ---
 
+## Session management
+
+For long feature development sessions, use `/checkpoint` before `/compact` to save session state, then `/restore` after compaction to reload context. See [`02-playbooks/context-management.md`](../02-playbooks/context-management.md) for details.
+
+---
+
 ## Recommended first steps
 
 1. **Read CLAUDE.md** thoroughly — it documents the project's architecture, conventions, and reference features

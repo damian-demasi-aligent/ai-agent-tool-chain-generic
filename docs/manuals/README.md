@@ -10,6 +10,7 @@
 - **Plan and deliver a feature** → [`01-workflows/feature-development.md`](01-workflows/feature-development.md)
 - **Debug a broken flow or toolchain issue** → [`02-playbooks/debugging.md`](02-playbooks/debugging.md)
 - **Explore unfamiliar code and assess impact** → [`02-playbooks/exploration-and-investigation.md`](02-playbooks/exploration-and-investigation.md)
+- **Manage session context for long features** → [`02-playbooks/context-management.md`](02-playbooks/context-management.md)
 - **Look up agents, commands, and skills** → [`03-reference/ai-tools-reference.md`](03-reference/ai-tools-reference.md)
 - **Understand architecture decisions and pitfalls** → [`05-concepts/knowledgebase-react-magento-data-bridge.md`](05-concepts/knowledgebase-react-magento-data-bridge.md) (and related topic docs in `05-concepts/`)
 

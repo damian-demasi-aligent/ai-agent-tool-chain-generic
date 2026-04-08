@@ -85,6 +85,8 @@ Skills are invoked with `/skill-name` in the conversation. They run in the curre
 
 | Skill | Purpose |
 |---|---|
+| `/checkpoint` | Save critical session state (ticket, branch, workflow phase, plan status, modified files, verification results) to `docs/requirements/<TICKET>/session-state.md`. Run before `/compact` to preserve context. |
+| `/restore [ticket?]` | Reload session context from a checkpoint file after `/compact`. Reads the session state, plan file, and current git state, then presents a summary with a suggested next step. |
 | `/commit` | Interactive commit workflow: analyse changes, propose plan, wait for approval, execute commits. |
 | `/document [TICKET-XXX]` | Generate a feature architecture document (`docs/features/`) from the code on the current branch. Includes Mermaid diagrams, data flows, deployment steps, and feature screenshots (via Playwright). |
 | `/review-pr [PR#/branch]` | Review a PR or branch diff with project-specific checklist (conventions from CLAUDE.md). |
@@ -139,6 +141,7 @@ These are loaded automatically into agents that declare them. They inject projec
 | I want to review before committing | `/review-pr` — run this **before** `/commit` to catch bugs while code is still uncommitted |
 | I'm ready to commit | `/commit` — run this **after** `/review-pr` and any fixes are applied |
 | I need to document a completed feature | `/document TICKET-XXX` — generates `docs/features/` architecture doc with Mermaid diagrams |
+| I want to compact context without losing state | `/checkpoint` then `/compact` then `/restore` — saves state, compresses history, reloads context |
 | I'm debugging a broken widget or PHP error | See [debugging.md](../02-playbooks/debugging.md) for guided workflows |
 | I'm exploring unfamiliar code or tracing dependencies | See [exploration-and-investigation.md](../02-playbooks/exploration-and-investigation.md) for investigation patterns |
 

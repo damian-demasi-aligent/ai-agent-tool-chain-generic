@@ -235,6 +235,7 @@ Run `/commit` again to commit the architecture document, then create the PR.
 | Plan and deliver a feature                   | [manuals/01-workflows/feature-development.md](manuals/01-workflows/feature-development.md)                     |
 | Debug something broken                       | [manuals/02-playbooks/debugging.md](manuals/02-playbooks/debugging.md)                                         |
 | Explore unfamiliar code                      | [manuals/02-playbooks/exploration-and-investigation.md](manuals/02-playbooks/exploration-and-investigation.md) |
+| Manage session context (checkpoint/restore)  | [manuals/02-playbooks/context-management.md](manuals/02-playbooks/context-management.md)                       |
 | Look up an agent or skill                    | [manuals/03-reference/ai-tools-reference.md](manuals/03-reference/ai-tools-reference.md)                       |
 | Understand an architecture decision          | [manuals/05-concepts/](manuals/05-concepts/) — one topic per file                                              |
 | Read the plan for a feature in progress      | `plans/` — one file per planned feature                                                                        |
