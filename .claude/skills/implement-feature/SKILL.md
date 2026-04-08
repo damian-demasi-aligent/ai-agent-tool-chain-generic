@@ -19,6 +19,8 @@ Run these commands in parallel to establish context:
 - `ls docs/plans/` — check available plan files
 - `git status` — check for uncommitted changes that might conflict
 
+After extracting the ticket identifier, check for `docs/requirements/<TICKET>/session-state.md`. If it exists and its `Workflow` field is `implement-feature`, read it and report: "Found saved session state (last completed: Phase N)." Use the saved data as context for the current run.
+
 ## Phase 1: Validate the plan
 
 1. **Locate the plan file.** If $ARGUMENTS is a file path (e.g. `docs/plans/ABC-123-my-awesome-feature.md`), read it. If it's a ticket number, look for a matching file in `docs/plans/`. If no plan exists, stop and tell the user to run `/plan-feature` first.
@@ -82,6 +84,48 @@ Wait for the agent to complete. This may take a while for large features.
 
 **If the implementer returns a stub or configuration blocker** instead of a completed implementation, present the blocker report to the user and stop. Do not proceed to Phase 3. The user must resolve the issue (implement dependencies, configure environment variables, or confirm the current state is intentional) before re-running `/implement-feature`.
 
+### Milestone: Save state after implementation
+
+After the feature-implementer agent returns successfully (not blocked), save transient state so it survives context compaction. Create the directory if needed (`mkdir -p docs/requirements/<TICKET>/`), then write to `docs/requirements/<TICKET>/session-state.md`:
+
+```markdown
+# Session State — <TICKET>
+
+| Field | Value |
+|-------|-------|
+| Workflow | implement-feature |
+| Last completed phase | 2 |
+| Ticket | <TICKET> |
+| Branch | <branch name from Phase 0> |
+| Plan file | <plan file path from Phase 1> |
+| Saved at | <ISO timestamp> |
+
+## Verification Results
+
+- Type-check: <PASSED / FAILED (details)>
+- Lint: <PASSED / FAILED (details)>
+- Build: <PASSED / FAILED (details)>
+- Smoke test: <PASSED / FAILED / SKIPPED (details)>
+- Browser verification: <PASSED / FAILED / SKIPPED (details)>
+
+## Change Summary
+
+### Files created
+<list from implementer output>
+
+### Files modified
+<list from implementer output>
+
+## Checklist Progress
+
+<X of Y items completed>
+<Blocked items if any>
+
+## Review Findings
+
+(Pending — reviewer has not yet run)
+```
+
 ## Phase 3: Code review
 
 After the feature-implementer agent returns, spawn the **reviewer** agent on the working directory:
@@ -103,7 +147,17 @@ The plan that guided the implementation is at [plan file path].
 Follow your standard review process: run git diff to see the full diff, then review for correctness, patterns compliance, cross-boundary consistency, and accessibility."
 ```
 
-Wait for the reviewer to complete, then proceed to Phase 4.
+Wait for the reviewer to complete, then proceed to the milestone save.
+
+### Milestone: Save state after review
+
+After the reviewer agent returns, update `docs/requirements/<TICKET>/session-state.md`. Overwrite the file with all Phase 2 data plus the review findings. Update the `Last completed phase` to `3` and replace the `## Review Findings` section:
+
+```markdown
+## Review Findings
+
+<paste the reviewer agent's findings verbatim>
+```
 
 ## Phase 4: Report results
 

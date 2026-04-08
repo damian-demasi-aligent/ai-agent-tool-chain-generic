@@ -19,6 +19,8 @@ Run these commands in parallel:
 - `git diff <main-branch>...HEAD --name-only` — list of changed files
 - `git log <main-branch>..HEAD --oneline` — commit history on this branch
 
+After extracting the ticket identifier, check for `docs/requirements/<TICKET>/session-state.md`. If it exists and its `Workflow` field is `correct-course` and it contains a `## Amendment Proposal` section, present the saved proposal to the user: "Found a saved amendment proposal from a previous session. Would you like to review and approve it, or start fresh?" If the user wants to use the saved proposal, skip to Phase 4. Otherwise, continue normally.
+
 Then:
 
 1. **Locate the plan file.** If $ARGUMENTS starts with a file path (e.g. `docs/plans/ABC-123-feature.md`), read it. If it's a ticket number, look for a matching file in `docs/plans/`. If no plan exists, stop and tell the user there's nothing to correct.
@@ -113,6 +115,41 @@ Present the proposed amendments in this format:
 > **Risk assessment:** [one sentence on what could go wrong with the new approach]
 >
 > **Estimated impact:** +N new files, ~M files modified, -R files removed compared to original plan
+
+### Milestone: Save state before approval
+
+Before asking the user to approve, save the amendment proposal to disk so it survives context compaction while waiting for user input. Create the directory if needed (`mkdir -p docs/requirements/<TICKET>/`), then write to `docs/requirements/<TICKET>/session-state.md`:
+
+```markdown
+# Session State — <TICKET>
+
+| Field | Value |
+|-------|-------|
+| Workflow | correct-course |
+| Last completed phase | 3 |
+| Ticket | <TICKET> |
+| Branch | <branch name from Phase 1> |
+| Plan file | <plan file path> |
+| Saved at | <ISO timestamp> |
+
+## Plan Status
+
+- Checklist: <X/Y items completed>
+- Files implemented: <N of M planned>
+- Unplanned files: <list or "none">
+
+## Deviation
+
+<the reason, in one sentence>
+
+## Amendment Proposal
+
+<paste the full formatted proposal as presented above>
+
+## Approval Status
+
+Pending — waiting for user approval
+```
 
 Use **AskUserQuestion** to ask the user to approve, modify, or reject the proposed amendments.
 

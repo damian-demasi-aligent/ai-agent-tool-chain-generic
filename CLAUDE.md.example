@@ -141,3 +141,7 @@ docs/
 - **Starting a new feature** -> check `docs/plans/` for an existing plan before asking `feature-planner` to re-plan
 - **Unsure which tool to use** -> read `docs/manuals/reference/ai-tools-reference.md`
 - **New to the repo** -> start with `docs/manuals/getting-started/onboarding.md`
+
+## Session Checkpointing
+
+Before running `/compact`, run `/checkpoint` to save session state to `docs/requirements/<TICKET>/session-state.md`. After compaction, run `/restore` to reload context and continue where you left off.

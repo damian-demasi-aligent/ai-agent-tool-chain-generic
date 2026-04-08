@@ -19,6 +19,8 @@ Run these commands in parallel to establish context:
 - `ls docs/requirements/` — check available requirements files
 - `ls docs/plans/` — check for existing plans (avoid duplicating work)
 
+After extracting the ticket identifier, check for `docs/requirements/<TICKET>/session-state.md`. If it exists and its `Workflow` field is `plan-feature`, read it and report: "Found saved session state (last completed: Phase N)." Use the saved data as context for the current run.
+
 ## Phase 1: Read requirements and identify scope
 
 1. **Read the requirements.** If $ARGUMENTS is a file path (e.g. `docs/requirements/ABC-123/description.md`), read it. If it's a ticket number, look for a matching directory or file in `docs/requirements/`. If it's a description, use it directly.
@@ -263,6 +265,41 @@ The following impact analysis was conducted by impact-analyser agents:
 
 ## Constraints
 [any delivery constraints, scope notes, or decisions from Phase 1]
+```
+
+## Milestone: Save session state
+
+Before reporting, save transient state so it survives context compaction. Create the directory if needed (`mkdir -p docs/requirements/<TICKET>/`), then write to `docs/requirements/<TICKET>/session-state.md` (derive `<TICKET>` the same way as interview-supplement.md — branch name first, then kebab-case slug):
+
+```markdown
+# Session State — <TICKET>
+
+| Field | Value |
+|-------|-------|
+| Workflow | plan-feature |
+| Last completed phase | 4 |
+| Ticket | <TICKET> |
+| Branch | <branch name from Phase 0> |
+| Plan file | <path to the plan file produced by the feature-planner agent> |
+| Saved at | <ISO timestamp> |
+
+## Agent Activity Summary
+
+| # | Agent Type | Question / Target | Key Finding |
+|---|---|---|---|
+| 1 | codebase-qa | <question> | <one-line summary> |
+| ... | ... | ... | ... |
+| N | feature-planner | <prompt summary> | <one-line summary> |
+
+**Totals:** X codebase-qa agents, Y impact-analyser agents, Z total.
+
+## Interview Status
+
+<"X questions asked, answers saved to <path>" OR "Skipped — requirements complete">
+
+## Open Questions Count
+
+<number of open questions in the plan>
 ```
 
 ## Phase 5: Report
