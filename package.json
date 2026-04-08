@@ -1,0 +1,29 @@
+{
+  "name": "@aligent/claude-toolchain",
+  "version": "1.0.0",
+  "description": "Portable Claude Code toolchain — agents, skills, hooks, rules, and documentation templates for AI-assisted feature development",
+  "bin": {
+    "claude-toolchain": "./bin/cli.mjs"
+  },
+  "files": [
+    "bin/",
+    "template/"
+  ],
+  "keywords": [
+    "claude-code",
+    "ai-toolchain",
+    "developer-tools",
+    "agents",
+    "skills"
+  ],
+  "scripts": {
+    "build": "bash bin/build-template.sh",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "UNLICENSED",
+  "private": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module"
+}
