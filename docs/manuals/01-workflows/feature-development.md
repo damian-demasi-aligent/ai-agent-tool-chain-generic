@@ -30,7 +30,11 @@ For canonical agent and skill definitions, use [`../03-reference/ai-tools-refere
 ```mermaid
 flowchart TD
     Z["0️⃣ Phase 0: Fetch requirements<br/>./docs/scripts/fetch-jira-ticket.sh"] --> A
-    A["1️⃣ Phase 1: Plan<br/>/plan-feature docs/requirements/TICKET-XXX/description.md"] --> B{Open questions?}
+    A["1️⃣ Phase 1: Plan<br/>/plan-feature docs/requirements/TICKET-XXX/description.md"] --> INT{Requirements<br/>complete?}
+    INT -- "Thin/incomplete" --> INTV["Interview: 3-6 targeted questions<br/>via AskUserQuestion"]
+    INTV --> RES[Research + plan]
+    INT -- "Complete" --> RES
+    RES --> B{Open questions?}
     B -- Yes --> C[Resolve open questions<br/>Refine scope]
     C --> D
     B -- No --> D[Save approved plan<br/>docs/plans/TICKET-XXX-feature-name.md]
@@ -71,7 +75,7 @@ Credentials are read from `.env.development` (`JIRA_EMAIL` and `JIRA_API_TOKEN`)
 /plan-feature docs/requirements/<TICKET-ID>/description.md
 ```
 
-The `/plan-feature` skill orchestrates the full planning workflow: it spawns `codebase-qa` sub-agents to research how reference features implement the needed patterns, spawns `impact-analyser` sub-agents to assess ripple effects on shared files, then passes all findings to the `@feature-planner` agent. The planner synthesizes the research into a file-by-file implementation plan ordered by layer — and can read mockup images in `docs/requirements/<TICKET-ID>/attachments/` for UI placement context. Save its output to `docs/plans/TICKET-XXX-feature-name.md`.
+The `/plan-feature` skill orchestrates the full planning workflow: it first assesses whether the requirements are detailed enough — if acceptance criteria, layers, data model, or UI patterns are missing, it conducts a short interview (3-6 targeted questions via `AskUserQuestion`) to clarify scope before spending tokens on research. Answers are saved to `docs/requirements/<TICKET-ID>/interview-supplement.md` and fed into both the research and planning phases. If requirements are already detailed, the interview is skipped entirely. It then spawns `codebase-qa` sub-agents to research how reference features implement the needed patterns, spawns `impact-analyser` sub-agents to assess ripple effects on shared files, then passes all findings to the `@feature-planner` agent. The planner synthesizes the research into a file-by-file implementation plan ordered by layer — and can read mockup images in `docs/requirements/<TICKET-ID>/attachments/` for UI placement context. Save its output to `docs/plans/TICKET-XXX-feature-name.md`.
 
 > **Before implementing — comprehension checkpoint:** Don't just resolve open questions. Verify you can explain the feature's data flow end-to-end from the plan: how user input enters, crosses layers, gets processed, and returns. If you can't, use `@codebase-qa` to fill gaps before proceeding. Approving a plan you don't understand leads to comprehension debt (see `05-concepts/knowledgebase-comprehension-debt.md`).
 

@@ -22,7 +22,7 @@ You plan new feature implementations by reusing proven patterns where possible a
 
 $ARGUMENTS contains either:
 - A direct feature description or requirements
-- A feature description **with pre-researched findings** from the `/plan-feature` command (includes Research Findings and Impact Analysis sections)
+- A feature description **with interview clarifications, pre-researched findings, and impact analysis** from the `/plan-feature` command (includes Requirements Clarification, Research Findings, and Impact Analysis sections)
 
 When research findings are provided, use them as your primary source for pattern details, file paths, and cross-boundary dependencies. Do NOT re-research what has already been provided — focus on synthesis and planning.
 
@@ -33,6 +33,8 @@ When no research findings are provided (direct invocation), read the reference i
 ### Step 1: Understand the request
 
 Parse $ARGUMENTS to understand what feature is being planned. Ask clarifying questions if the scope is ambiguous by including them in your output.
+
+If a **Requirements Clarification (Interview)** section is provided, treat its answers as first-class requirements with the same weight as the original requirements text. Do not re-ask questions that were already answered in the interview. If the interview notes that the developer deferred to planner assumptions, state your assumptions explicitly in the Open Questions section but proceed with planning rather than blocking.
 
 Capture explicit constraints before planning:
 

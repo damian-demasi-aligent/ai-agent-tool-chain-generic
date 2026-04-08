@@ -30,6 +30,120 @@ Run these commands in parallel to establish context:
 
 3. **Determine the technical needs** of the feature: does it need an API endpoint/mutation? Transactional emails? Admin config? A frontend form? A new component/page? Map each need to the reference feature from the Reuse Before Reimplementing table in `.claude/rules/`.
 
+## Phase 1.5: Requirements completeness interview (conditional)
+
+After reading the requirements in Phase 1, assess whether they are detailed enough to produce a high-quality plan. This prevents wasting tokens on codebase research before the scope is clear.
+
+### Assess completeness
+
+Check the requirements text for the presence of these signals:
+
+| # | Signal | Present if the requirements contain... |
+|---|--------|----------------------------------------|
+| 1 | Acceptance criteria | A section titled "Acceptance Criteria" / "AC", Given/When/Then blocks, or a numbered list of testable success conditions |
+| 2 | Specified layers | Explicit mentions of layers: "API", "GraphQL", "REST", "mutation", "component", "widget", "admin config", "email", "database", "migration", "page", "form" |
+| 3 | Data model | Named fields, attributes, columns, or entity descriptions (e.g. "name field", "status attribute", "date column", "extends the order entity") |
+| 4 | UI interaction model | References to forms, modals, drawers, pages, steps, wizards, listings, OR the presence of mockup files in `docs/requirements/<TICKET>/attachments/` |
+| 5 | Error / edge cases | Mentions of "error", "validation", "edge case", "failure", "fallback", "empty state", or specific error scenarios |
+| 6 | Integration points | Mentions of third-party services, external APIs, email recipients, webhooks, cron jobs, or references to existing modules/components by name |
+
+**If all signals are present:** Note "Requirements assessment: COMPLETE — skipping interview" and proceed directly to Phase 2.
+
+**If a previous interview supplement exists** at `docs/requirements/<TICKET>/interview-supplement.md`: Read it, present the answers to the user, and use **AskUserQuestion** to confirm: "I found answers from a previous requirements interview. Are these still correct?" with options "Yes, use these answers" / "No, let's redo the interview". If reusing, skip the interview and proceed to Phase 2.
+
+**If signals are missing:** Conduct the interview below, asking only the questions that correspond to missing signals.
+
+### Interview
+
+Before asking, tell the user: "I have a few quick questions to clarify the scope before starting codebase research."
+
+**Ask only the questions whose corresponding signal is missing. Ask them in order, one at a time.**
+
+#### Q1: Scope and success criteria (if signal 1 missing)
+
+Use **AskUserQuestion**:
+- question: "What does 'done' look like for this feature? What should a user be able to do when it's complete?"
+- options: "Let me describe the acceptance criteria" / "The user should be able to [submit/view/configure/manage] ..." / "This is an internal/backend-only change (no user-facing behaviour)" / "I'm not sure yet — make reasonable assumptions and I'll refine the plan"
+
+If the user selects "make reasonable assumptions", note this and **skip all remaining questions** — proceed to synthesis with assumptions noted.
+
+#### Q2: Layers involved (if signal 2 missing)
+
+Use **AskUserQuestion**:
+- question: "Which layers does this feature touch?"
+- options: "Backend only (API/data/business logic)" / "Frontend only (UI components/pages)" / "Full-stack (backend API + frontend UI)" / "Full-stack + admin configuration" / "Full-stack + transactional emails" / "Let me specify: ..."
+
+#### Q3: Data model (if signal 3 missing)
+
+Use **AskUserQuestion**:
+- question: "What data does this feature work with? Describe the key fields/attributes, or point me to an existing model to extend."
+- options: "New entity with these fields: ..." / "Extends an existing entity — add fields to [entity name]" / "No new data model — uses existing data only" / "I'm not sure — propose a data model in the plan"
+
+#### Q4: UI interaction pattern (if signal 4 missing AND feature involves frontend)
+
+Skip this question if the user answered "Backend only" in Q2 or if the requirements clearly describe a backend-only feature.
+
+Use **AskUserQuestion**:
+- question: "How does the user interact with this feature?"
+- options: "A form (single page)" / "A multi-step form / wizard" / "A listing or table with search/filter" / "A modal or drawer triggered from an existing page" / "A new standalone page" / "Other: ..."
+
+#### Q5: Error handling (if signal 5 missing)
+
+Use **AskUserQuestion**:
+- question: "Are there specific error cases or edge conditions to handle?"
+- options: "Standard validation only (required fields, format checks)" / "Yes, specific cases: ..." / "Fail gracefully with user-friendly messages — no specific cases defined" / "Skip — I'll add edge cases after seeing the initial plan"
+
+#### Q6: Integration dependencies (if signal 6 missing)
+
+Use **AskUserQuestion**:
+- question: "Does this feature integrate with any external services or existing modules?"
+- options: "No external integrations" / "Sends email notifications" / "Calls a third-party API: ..." / "Extends an existing module: [module name]" / "Multiple integrations — let me describe: ..."
+
+### Synthesize interview into supplement
+
+After the interview (or after confirming a previous supplement), write a requirements supplement file.
+
+**File path:** `docs/requirements/<TICKET>/interview-supplement.md` — derive `<TICKET>` from:
+- The ticket identifier extracted in Phase 0 (branch name or $ARGUMENTS)
+- If no ticket identifier, use a kebab-case slug from the feature description (e.g. `hire-request-form`)
+
+**Format:**
+
+```markdown
+# Interview Supplement — <TICKET or feature-name>
+
+Generated by /plan-feature requirements interview on <date>.
+
+## Scope and Success Criteria
+<answer or "Not asked — requirements already specify acceptance criteria">
+
+## Layers Involved
+<answer or "Not asked — requirements already specify layers: [list]">
+
+## Data Model
+<answer or "Not asked — requirements already describe data model">
+
+## UI Interaction Pattern
+<answer or "Not asked — [reason: backend-only / requirements describe UI / signal present]">
+
+## Error Handling
+<answer or "Not asked — requirements already address edge cases">
+
+## Integration Dependencies
+<answer or "Not asked — no external integrations identified">
+```
+
+If the interview was skipped entirely (all signals present), write:
+
+```markdown
+# Interview Supplement — <TICKET or feature-name>
+
+Requirements assessment: COMPLETE — interview skipped.
+All completeness signals present in the original requirements.
+```
+
+**Carry the interview answers forward.** When formulating codebase-qa questions in Phase 2, incorporate the interview answers to sharpen the research. For example, if the user specified "multi-step form wizard" as the UI pattern, reference the project's existing form wizard pattern in the research question. If the user specified specific layers, focus research agents on those layers.
+
 ## Phase 2: Research via codebase-qa agents
 
 Based on the analogues and technical needs identified in Phase 1, use the **Agent tool** to launch `codebase-qa` agents in parallel. Each agent call must use `subagent_type: "codebase-qa"`.
@@ -123,6 +237,11 @@ Plan the implementation of the following feature.
 ## Requirements
 [paste or summarise the requirements]
 
+## Requirements Clarification (Interview)
+The following was clarified with the developer before research:
+
+[paste full contents of interview-supplement.md, or note "Interview skipped — requirements were complete"]
+
 ## Research Findings
 The following codebase research was conducted by codebase-qa agents:
 
@@ -166,5 +285,6 @@ After the `feature-planner` agent completes, report:
 **Totals:** X codebase-qa agents, Y impact-analyser agents, Z total.
 ```
 
-3. The number of open questions in the plan
-4. A reminder: "Review the plan at [path]. Verify you can explain the feature's data flow end-to-end before running the feature-implementer."
+3. Interview status: "X questions asked, answers saved to [path]" or "skipped — requirements complete"
+4. The number of open questions in the plan
+5. A reminder: "Review the plan at [path]. Verify you can explain the feature's data flow end-to-end before running the feature-implementer."
