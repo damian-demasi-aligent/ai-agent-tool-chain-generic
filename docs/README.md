@@ -57,17 +57,22 @@ The "Claude Code Feature Development Toolchain: A Step-by-Step Tutorial" Conflue
 
 ## Set up this toolchain in a new project
 
-This toolchain is a **template repo**. To adopt it:
+Install via npm and configure:
 
-1. Copy the files and directories from this repo into your project
-2. Run `/detect-stack` — auto-detects your technology stack and writes `.claude/stack-config.json`
-3. Run `/setup-project` — generates `CLAUDE.md` and `.claude/rules/`, prunes inapplicable skills/hooks/rules, and configures the toolchain for your stack
+```bash
+cd your-project
+npx @aligent/claude-toolchain init
+```
+
+Then open Claude Code and run `/detect-stack` followed by `/setup-project`.
 
 ![Toolchain Configuration](claude-code-feature-development-toolchain-setup.png)
 
-#### Step 1: Copy the toolchain
+#### Step 1: Install the toolchain
 
-Copy all the files and directories from this repo into your project root. These contain the full set of agents, skills, hooks, MCPs, rules examples, and documentation templates. Everything inapplicable to your stack will be pruned in Step 3.
+Run `npx @aligent/claude-toolchain init` from your project root. This copies the full set of agents, skills, hooks, MCPs, rules examples, and documentation templates into your project. Everything inapplicable to your stack will be pruned in Step 3.
+
+Alternatively, copy the files manually from the [template repository](https://github.com/aligent/ai-agent-tool-chain-generic).
 
 #### Step 2: `/detect-stack`
 
@@ -99,7 +104,8 @@ Magento + React/Vite, Magento + Luma (pure PHP), Next.js + Magento, Next.js + Bi
 | `/setup-project` pruned a skill/hook you need | Check `.claude/setup-log.md` to see what was removed. Restore from git (`git checkout -- .claude/skills/<name>/`) and remove the skill's entry from `stack-capabilities.json` so it's always kept |
 | CLAUDE.md has incorrect project details       | Edit it directly — it's a regular markdown file. The toolchain reads it at runtime                                                                                                                |
 | A rules file has wrong conventions            | Edit the relevant `.claude/rules/*.md` file directly                                                                                                                                              |
-| Want to re-run setup from scratch             | Copy the toolchain files again from the template repo and repeat Steps 2-3                                                                                                                        |
+| Want to re-run setup from scratch             | Remove `.claude/` and `docs/`, run `npx @aligent/claude-toolchain init`, then repeat Steps 2-3                                                                                                   |
+| Want to update the toolchain to a new version | Run `npx @aligent/claude-toolchain update` — preserves your CLAUDE.md, rules, and config.sh                                                                                                      |
 
 ---
 
