@@ -5,3 +5,7 @@
 
 # Environment variables
 .env.development
+
+# npm package build output
+template/
+node_modules/
