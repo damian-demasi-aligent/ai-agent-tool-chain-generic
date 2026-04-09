@@ -11,6 +11,21 @@ E-commerce storefront built with Next.js 15 (App Router) and React 19. Uses Apol
 - **Monorepo:** Yarn 4 workspaces with Nx for task orchestration
 - **Packages:** `apps/storefront` (Next.js app), `libs/ui` (shared components), `libs/graphql` (operations + codegen), `libs/utils` (shared utilities), `libs/config` (shared config)
 
+## Domain Glossary
+
+E-commerce storefront serving a multi-brand retail group with locale-aware catalogue and promotions.
+
+- **Catalogue** — The product data hierarchy (categories → products → variants). Maps to GraphQL `Category` and `Product` types; sourced from the headless CMS.
+- **Codegen** — GraphQL Code Generator (`yarn codegen`). Reads `.graphql` operation files and the remote schema, outputs typed hooks and types into `libs/graphql/src/generated/`.
+- **ISR (Incremental Static Regeneration)** — Next.js re-generation strategy for product and category pages. Configured via `revalidate` in route segment config.
+- **Locale** — An `{language}-{country}` pair (e.g. `en-AU`, `fr-FR`). Determines translations, currency, and which catalogue view to query. Resolved in middleware and passed via `next-intl`.
+- **Operation** — A `.graphql` file in `libs/graphql/src/operations/` defining a query, mutation, or fragment. Codegen turns each into a typed Apollo hook.
+- **PDP / PLP** — Product Detail Page / Product Listing Page. Route groups `(shop)/products/[slug]` and `(shop)/categories/[...path]`.
+- **Provider Stack** — The nested Context providers in `app/layout.tsx` (Apollo, intl, auth, theme). Order matters — Apollo must wrap everything that uses GraphQL hooks.
+- **RSC (React Server Component)** — Default component type in the App Router. Uses `apollo-rsc` for server-side data fetching. Add `'use client'` only when interactivity is needed.
+- **Route Group** — Next.js `(parenthesised)` directory that applies a shared layout without affecting the URL. `(shop)` = public pages, `(account)` = authenticated pages.
+- **Variant** — A purchasable SKU within a product (e.g. size/colour combination). Maps to `ProductVariant` GraphQL type.
+
 ## Commands
 
 ### Frontend (Node)

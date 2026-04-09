@@ -8,6 +8,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Internal operations dashboard for warehouse management. React 19 SPA built with Vite, consuming a REST API backend. Uses React Router for client-side routing and TanStack Query for server state management.
 
+## Domain Glossary
+
+Warehouse management system (WMS) for a multi-site distribution network.
+
+- **Bin** — A specific storage location within a zone (e.g. `A3-12`). Maps to `Bin` type in `api/types/inventory.ts`. Not a waste container.
+- **Fulfilment** — The process of picking, packing, and shipping an order. Maps to the `/fulfilment` API endpoints and `useFulfilmentFlow` hook.
+- **Inbound** — Goods arriving at the warehouse from suppliers. Tracked via `InboundShipment` records and the Inbound page (`pages/inbound/`).
+- **Order** — A customer purchase to be fulfilled. Maps to `Order` type and `api/endpoints/orders.ts`. Status lifecycle: `pending` → `picking` → `packed` → `shipped`.
+- **Pick List** — A generated list of items to collect from bins for a batch of orders. Maps to `PickList` type; generated server-side, consumed by the Pick page.
+- **SKU** — Stock Keeping Unit — unique product identifier. The primary key for inventory lookups across all API endpoints.
+- **Wave** — A scheduled batch of orders released for fulfilment together. Maps to `Wave` type and the `/waves` API endpoints.
+- **Zone** — A logical area of the warehouse (e.g. "Cold Storage", "Oversized"). Maps to `Zone` type; used for pick path optimisation.
+
 ## Commands
 
 ### Frontend (Node)

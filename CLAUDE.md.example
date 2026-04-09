@@ -10,6 +10,22 @@ Magento 2 Enterprise Edition (v2.4.7) ecommerce platform. The frontend combines 
 
 - **Vendor namespace:** `VendorName` — all custom modules live under `app/code/VendorName/`
 
+## Domain Glossary
+
+Magento 2 B2B ecommerce platform for industrial supply procurement. Buyers build requisition lists, submit them through an approval chain, and receive consolidated shipments from multiple warehouses.
+
+- **Approval Chain** — The sequence of manager approvals a purchase order must pass through before it becomes a confirmed order. Maps to `ApprovalRule` model and `approval_chain` DB table. Configurable per company tier in admin.
+- **Blanket PO** — A standing purchase order with a pre-negotiated budget that buyers can draw against without per-order approval. Maps to `BlanketPurchaseOrder` type in GraphQL.
+- **Company Tier** — A classification of B2B customer accounts (e.g. Bronze, Silver, Gold) that determines pricing rules and approval thresholds. Maps to `company_tier` EAV attribute on customer.
+- **EAV** — Entity-Attribute-Value storage model used for products, categories, and customers. Attributes are added via `db_schema.xml` + `InstallData`/`Patch`, not direct table columns.
+- **Enquiry Code** — Auto-generated reference number for RFQ submissions (format: `ENQ-YYYYMMDD-XXXX`). Maps to `EnquiryCodeGenerator` service class.
+- **MRO** — Maintenance, Repair, and Operations — the product category this platform specialises in. Affects search weighting and category taxonomy.
+- **Punchout** — A cXML-based integration that lets buyers browse this catalogue from within their own procurement system (e.g. SAP Ariba). Maps to `VendorName\Punchout` module.
+- **Purchase Order** — A formal B2B order created from a requisition list after approval. Not the same as a standard Magento order — POs have their own lifecycle (`draft` → `pending_approval` → `approved` → `ordered`). Maps to `PurchaseOrder` GraphQL type.
+- **Quick Order** — A bulk-add-to-cart interface where buyers paste SKU + quantity pairs. Maps to the `quick-order` React widget.
+- **Requisition List** — A saved list of frequently ordered items for B2B buyers, analogous to a wishlist but for repeat procurement. Maps to `RequisitionList` GraphQL type and `requisition_list` DB table.
+- **RFQ** — Request for Quote — a buyer submits a list of items and quantities to negotiate pricing. Maps to `VendorName\Rfq` module and `/rfq` React widget.
+
 ## Commands
 
 ### React / Frontend (Node)
