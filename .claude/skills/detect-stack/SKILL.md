@@ -20,26 +20,27 @@ Scan the project root and immediate subdirectories for framework indicators. Use
 
 Run these checks **in parallel** (multiple Glob/Grep calls in one message):
 
-| Indicator | Check | Capability |
-|---|---|---|
-| Magento backend | `composer.json` contains `magento/framework` | `magento` |
-| Magento theme | `app/design/frontend/` directory exists with layout XML or LESS files | `magento-theme` |
-| Magento-React bridge | PHTML files containing `data-react-widget` | `magento-react-bridge` |
-| Next.js | `package.json` contains `"next"` as dependency | `nextjs` + `react` |
-| React (non-Next) | `package.json` contains `"react"` but NOT `"next"` | `react` |
-| Vite | `vite.config.ts` or `vite.config.js` exists | bundler = vite |
-| Webpack | `webpack.config.*` exists or `package.json` has webpack dependency | bundler = webpack |
-| GraphQL schemas | `*.graphqls` files exist OR `schema.graphql` files exist | `graphql` |
-| BigCommerce | `package.json` contains BigCommerce SDK references (`@bigcommerce/`) | `bigcommerce` |
-| TypeScript | `tsconfig.json` exists | language = typescript |
-| Tailwind | `tailwind.config.*` exists or `package.json` has tailwindcss | cssFramework = tailwind |
-| LESS | `.less` files in theme directories | cssFramework = less |
+| Indicator            | Check                                                                 | Capability              |
+| -------------------- | --------------------------------------------------------------------- | ----------------------- |
+| Magento backend      | `composer.json` contains `magento/framework`                          | `magento`               |
+| Magento theme        | `app/design/frontend/` directory exists with layout XML or LESS files | `magento-theme`         |
+| Magento-React bridge | PHTML files containing `data-react-widget`                            | `magento-react-bridge`  |
+| Next.js              | `package.json` contains `"next"` as dependency                        | `nextjs` + `react`      |
+| React (non-Next)     | `package.json` contains `"react"` but NOT `"next"`                    | `react`                 |
+| Vite                 | `vite.config.ts` or `vite.config.js` exists                           | bundler = vite          |
+| Webpack              | `webpack.config.*` exists or `package.json` has webpack dependency    | bundler = webpack       |
+| GraphQL schemas      | `*.graphqls` files exist OR `schema.graphql` files exist              | `graphql`               |
+| BigCommerce          | `package.json` contains BigCommerce SDK references (`@bigcommerce/`)  | `bigcommerce`           |
+| TypeScript           | `tsconfig.json` exists                                                | language = typescript   |
+| Tailwind             | `tailwind.config.*` exists or `package.json` has tailwindcss          | cssFramework = tailwind |
+| LESS                 | `.less` files in theme directories                                    | cssFramework = less     |
 
 ### Derive initial capabilities list
 
 Based on the heuristic results, build a preliminary list of capabilities from: `magento`, `magento-theme`, `magento-react-bridge`, `react`, `graphql`, `nextjs`, `bigcommerce`.
 
 **Implied capabilities:**
+
 - `magento-react-bridge` implies both `magento` and `react`
 - `magento-theme` implies `magento`
 - `nextjs` implies `react`
@@ -48,7 +49,7 @@ Based on the heuristic results, build a preliminary list of capabilities from: `
 
 ## Layer 2: Deep analysis via @codebase-qa subagents
 
-After Layer 1 completes, spawn **up to 3 `codebase-qa` agents in parallel** to gather details that require reading and understanding code. Only spawn agents for capabilities that were detected in Layer 1.
+After Layer 1 completes, spawn **up to 4 subagents in parallel** to gather details that require reading and understanding code. Agents 1–3 use `codebase-qa` and only spawn for capabilities detected in Layer 1. Agent 4 (`Explore`) always runs.
 
 ### Agent 1: Backend structure (spawn if `magento` or `bigcommerce` detected)
 
@@ -122,6 +123,35 @@ Agent tool call:
 Return your findings as structured key-value pairs."
 ```
 
+### Agent 4: Domain glossary (always spawn)
+
+```
+Agent tool call:
+  description: "Build domain glossary"
+  subagent_type: "Explore"
+  prompt: "Explore this codebase to build a **domain glossary** — a mapping of business/domain terms to their code representations. This will be used to help future AI assistants understand the project without extensive exploration.
+
+**What to look for:**
+
+1. **Domain entities** — Read model classes, database schemas (db_schema.xml, migrations, Prisma schema, etc.), GraphQL type definitions, and TypeScript type files. Identify the core business objects and note which code artefact defines them.
+
+2. **Business processes / workflows** — Look at resolvers, controllers, service classes, and form components for multi-step processes. Identify what the business calls them vs. what the code calls them.
+
+3. **Domain-specific vocabulary** — Look for terms in comments, variable names, config labels, and email templates that a developer unfamiliar with this industry wouldn't immediately understand. Pay attention to admin configuration labels (system.xml, settings files) — they often use the business's own language.
+
+4. **External system integrations** — Identify third-party systems (payment gateways, ERPs, marketing platforms, procurement systems) and the business terms used to describe them.
+
+5. **Acronyms and prefixes** — Look for short prefixes in code and decode what they stand for based on surrounding context.
+
+**Output format:** Return a markdown glossary with 10-20 entries, sorted alphabetically. Each entry should follow this format:
+
+- **Term** — Business definition. Maps to `CodeArtefact` (brief technical note).
+
+Keep definitions to one sentence. Focus on terms where the business meaning is non-obvious from the code name alone. Skip generic programming concepts and framework terminology — the glossary should capture *this project's* domain, not the framework it's built on. If the codebase yields fewer than 10 meaningful entries, return what you find — do not pad with generic terms.
+
+Also include a short (2-3 sentence) **Domain Summary** paragraph at the top describing what business this project serves and its core purpose."
+```
+
 ---
 
 ## Layer 3: Assemble and confirm
@@ -193,15 +223,24 @@ After all agents complete, merge their findings into a `.claude/stack-config.jso
     "features": "docs/features",
     "requirements": "docs/requirements",
     "manuals": "docs/manuals"
+  },
+  "domainGlossary": {
+    "summary": "<2-3 sentence domain summary from Agent 4, or null if fewer than 5 entries>",
+    "entries": [
+      "**Requisition List** — A saved list of frequently ordered items for B2B buyers. Maps to `RequisitionList` GraphQL type and `requisition_list` DB table.",
+      "**Pick List** — A generated list of items to collect from warehouse bins. Maps to `PickList` type in `api/types/fulfilment.ts`."
+    ]
   }
 }
 ```
 
 **Rules for assembling:**
+
 - Set sections to `null` when the capability is not detected (e.g., `"backend": null` for a pure React SPA)
 - Use actual values discovered by agents, not generic defaults
 - For `mainBranch`: run `git remote show origin | grep 'HEAD branch'` or check for `main`/`master`/`production` branches
 - For `commitPrefix`: check recent git log for patterns like `ABC-123:` or `[ABC-123]`
+- For `domainGlossary`: if Agent 4 returned fewer than 5 meaningful entries, set the entire field to `null` — the project may be too generic or early-stage for a glossary. Otherwise, populate `summary` and `entries` from the agent's output.
 
 ### Present findings for confirmation
 
@@ -209,8 +248,9 @@ After writing the initial `stack-config.json`, present the findings to the devel
 
 1. Show the detected capabilities list
 2. Show the key stack details (backend, frontend, API type, theme)
-3. Highlight any values that could not be auto-detected (marked as `null` or `"unknown"`)
-4. Use **AskUserQuestion** to ask the developer to confirm or correct:
+3. Show the domain glossary summary and entry count (or note that it was skipped)
+4. Highlight any values that could not be auto-detected (marked as `null` or `"unknown"`)
+5. Use **AskUserQuestion** to ask the developer to confirm or correct:
    - "Is this stack configuration correct?"
    - Options: "Yes, looks correct" / "I need to make corrections"
 
@@ -219,6 +259,7 @@ If corrections are needed, ask follow-up questions for the specific values, then
 ### Final output
 
 After confirmation, report:
+
 - The saved config file path: `.claude/stack-config.json`
 - The detected capabilities
 - **Relevant example:** Point the developer to the matching example in `docs/examples/` so they can preview what `/setup-project` will generate:
