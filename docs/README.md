@@ -71,7 +71,7 @@ Copy all the files and directories from this repo into your project root. These 
 
 #### Step 2: `/detect-stack`
 
-Spawns `codebase-qa` subagents (using Sonnet) to scan your project's package manifests, config files, framework markers, and directory structure. Produces `.claude/stack-config.json` — a structured description of your stack's capabilities (e.g. `magento`, `react`, `nextjs`, `graphql`).
+Spawns `codebase-qa` and `Explore` subagents (using Sonnet) to scan your project's package manifests, config files, framework markers, and directory structure. Produces `.claude/stack-config.json` — a structured description of your stack's capabilities (e.g. `magento`, `react`, `nextjs`, `graphql`) and a domain glossary mapping business terms to code artefacts.
 
 **User checkpoint:** Review and approve the detected stack configuration before proceeding.
 
@@ -80,7 +80,7 @@ Spawns `codebase-qa` subagents (using Sonnet) to scan your project's package man
 Reads `stack-config.json` and performs a multi-phase setup:
 
 1. Creates a **toolchain backup** (deleted automatically after setup completes)
-2. Generates a slim **CLAUDE.md** (architecture, commands, key dependencies) and **`.claude/rules/`** files (code standards, commit conventions, testing, language-specific conventions with path-scoped frontmatter)
+2. Generates a slim **CLAUDE.md** (architecture, commands, domain glossary, key dependencies) and **`.claude/rules/`** files (code standards, commit conventions, testing, language-specific conventions with path-scoped frontmatter)
 3. Presents a **setup plan** for review — lists what will be generated, pruned, and configured
 4. After approval: prunes inapplicable skills, hooks, and rules; updates agent configurations; rewrites `config.sh` with project-specific paths; cleans up example files
 5. Writes **`setup-log.md`** documenting what was configured
