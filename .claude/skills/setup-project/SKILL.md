@@ -62,6 +62,13 @@ Generate these sections in order. For each, scan the project to populate with re
 - Summarize the tech stack in 2-3 sentences
 - Note the vendor namespace (if Magento) or project structure
 
+#### `## Domain Glossary`
+
+- Read the `domainGlossary` field from `stack-config.json` (populated by `/detect-stack`)
+- If `domainGlossary` is `null`, omit this section entirely
+- Otherwise, insert the `summary` paragraph followed by the `entries` list
+- This section does not count toward the 200-line budget — it is a valuable reference that reduces future exploration overhead
+
 #### `## Commands`
 
 - **Always include a subsection for each detected layer:**
@@ -233,7 +240,7 @@ paths:
 
 ### Writing CLAUDE.md and rules files
 
-1. Assemble the slim sections (Project Overview, Commands, Architecture, Documentation) into CLAUDE.md
+1. Assemble the slim sections (Project Overview, Domain Glossary, Commands, Architecture, Documentation) into CLAUDE.md
 2. Write CLAUDE.md to the project root, replacing the existing CLAUDE.md (which is the example)
 3. Create `.claude/rules/` directory if it doesn't exist
 4. Write each applicable rules file with the appropriate frontmatter
@@ -249,6 +256,7 @@ paths:
 
 ### CLAUDE.md (slim)
 - Generated with sections: [list sections]
+- Domain Glossary: [N entries discovered / "skipped — fewer than 5 entries"]
 - Estimated line count: ~[N] lines
 
 ### Rules files (.claude/rules/)
